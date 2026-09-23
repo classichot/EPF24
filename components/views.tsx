@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { MoatScreens } from "@/components/moat-views";
 import {
   AGENTS,
   COMPANY,
@@ -146,6 +147,8 @@ function Seg({
 }
 
 export function Views({ s, api }: { s: ScreenId; api: Api }) {
+  const moat = MoatScreens({ s, goto: api.goto });
+  if (moat) return moat;
   if (s === "home") return <Home api={api} />;
   if (s === "intel") return <Intel api={api} />;
   if (s === "compare") return <Compare api={api} />;
@@ -205,29 +208,34 @@ function Home({ api }: { api: Api }) {
   ];
   return (
     <>
-      <Head k="01 — Home · 23 Sep 2026" title="Make every baht and every basis point compete.">
-        <button className="btn btn-secondary" onClick={() => api.goto("reports")}>Management report</button>
-        <button className="btn btn-primary" onClick={() => api.goto("market")}>Test the market →</button>
+      <Head k="EPF24 AI · 23 Sep 2026" title="We continuously test whether your provident fund is still competitive.">
+        <button className="btn btn-secondary" onClick={() => api.goto("twin")}>Simulate</button>
+        <button className="btn btn-primary" onClick={() => api.goto("market")}>Run market test →</button>
       </Head>
       <section className="poster">
-        <div className="kicker">EPF24 value opportunity</div>
-        <div className="poster-num">{baht(COMPANY.annualValue)}</div>
-        <div>Annual identified value for {COMPANY.name} and its employees.</div>
+        <div className="kicker">Current EPF value gap</div>
+        <div className="poster-num">{baht(COMPANY.annualValue)}<span style={{ fontSize: 22 }}>/year</span></div>
+        <div>Corporate saving {baht(COMPANY.feeSaving)}. Employee wealth opportunity {baht(COMPANY.investOpp)}. Illustrative 10-year difference {baht(ten)}.</div>
         <div className="poster-grid">
           <div>
-            <b>{baht(COMPANY.feeSaving)}</b>
-            <span>Corporate fee saving / year</span>
+            <b>3</b>
+            <span>Better-fit alternatives in the shadow market</span>
           </div>
           <div>
-            <b>{baht(COMPANY.investOpp)}</b>
-            <span>Employee investment opportunity / year</span>
+            <b>Negotiate</b>
+            <span>AI recommended mission · incumbent, not a forced switch</span>
           </div>
           <div>
-            <b>{baht(ten)}</b>
-            <span>Illustrative 10-year employee wealth difference</span>
+            <b>87%</b>
+            <span>Sample confidence · 37 anonymized observations</span>
           </div>
         </div>
       </section>
+      <div className="actions">
+        <button className="btn btn-secondary" type="button" onClick={() => api.goto("shadow")}>Review the shadow market</button>
+        <button className="btn btn-secondary" type="button" onClick={() => api.goto("nego")}>Negotiate current provider</button>
+        <button className="btn btn-primary" type="button" onClick={() => api.goto("cio")}>Open Autonomous CIO →</button>
+      </div>
       <div className="qgrid">
         {questions.map((x) => (
           <button key={x.q} onClick={() => api.goto(x.go)} type="button">

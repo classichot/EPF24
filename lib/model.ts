@@ -1,5 +1,15 @@
 export type ScreenId =
   | "home"
+  | "cio"
+  | "brain"
+  | "shadow"
+  | "fair"
+  | "dna"
+  | "nego"
+  | "twin"
+  | "intervene"
+  | "outcome"
+  | "exchange"
   | "intel"
   | "compare"
   | "bench"
@@ -18,25 +28,35 @@ export type ScreenId =
   | "reports"
   | "settings";
 
-export const NAV: { id: ScreenId; label: string }[] = [
-  { id: "home", label: "Home" },
-  { id: "intel", label: "EPF Intelligence" },
-  { id: "compare", label: "Compare" },
-  { id: "bench", label: "Benchmark" },
-  { id: "gap", label: "Value Gap" },
-  { id: "market", label: "Market Test" },
-  { id: "tender", label: "Tender" },
-  { id: "marketplace", label: "Marketplace" },
-  { id: "watch", label: "EPF Watch" },
-  { id: "committee", label: "Committee AI" },
-  { id: "employees", label: "Employees" },
-  { id: "workforce", label: "Retirement Intelligence" },
-  { id: "designer", label: "EPF Designer" },
-  { id: "switching", label: "Switching" },
-  { id: "mission", label: "AI Mission Center" },
-  { id: "docs", label: "Documents" },
-  { id: "reports", label: "Reports" },
-  { id: "settings", label: "Settings" },
+export const NAV: { id: ScreenId; label: string; group: "Moat" | "Operate" }[] = [
+  { id: "home", label: "Home", group: "Moat" },
+  { id: "cio", label: "Autonomous CIO", group: "Moat" },
+  { id: "brain", label: "Market Brain", group: "Moat" },
+  { id: "shadow", label: "Shadow Market", group: "Moat" },
+  { id: "fair", label: "Fair Price", group: "Moat" },
+  { id: "dna", label: "Provider DNA", group: "Moat" },
+  { id: "nego", label: "Negotiation Twin", group: "Moat" },
+  { id: "twin", label: "Digital Twin", group: "Moat" },
+  { id: "intervene", label: "Intervention", group: "Moat" },
+  { id: "outcome", label: "Outcome Engine", group: "Moat" },
+  { id: "exchange", label: "Exchange", group: "Moat" },
+  { id: "intel", label: "EPF Intelligence", group: "Operate" },
+  { id: "compare", label: "Compare", group: "Operate" },
+  { id: "bench", label: "Benchmark", group: "Operate" },
+  { id: "gap", label: "Value Gap", group: "Operate" },
+  { id: "market", label: "Market Test", group: "Operate" },
+  { id: "tender", label: "Tender", group: "Operate" },
+  { id: "marketplace", label: "Marketplace", group: "Operate" },
+  { id: "watch", label: "EPF Watch", group: "Operate" },
+  { id: "committee", label: "Committee AI", group: "Operate" },
+  { id: "employees", label: "Employees", group: "Operate" },
+  { id: "workforce", label: "Retirement Intelligence", group: "Operate" },
+  { id: "designer", label: "EPF Designer", group: "Operate" },
+  { id: "switching", label: "Switching", group: "Operate" },
+  { id: "mission", label: "AI Mission Center", group: "Operate" },
+  { id: "docs", label: "Documents", group: "Operate" },
+  { id: "reports", label: "Reports", group: "Operate" },
+  { id: "settings", label: "Settings", group: "Operate" },
 ];
 
 export const COMPANY = {
@@ -402,11 +422,67 @@ export function answerFor(q: string): { agent: string; a: string; screen: Screen
       "Test the market",
     ],
     [
-      /negotiat|repric/,
+      /shadow|still competitive|no action/,
+      "EPF Chief Agent",
+      `The shadow market is a virtual tender, not a live bid. On this profile the best-fit cost is about ${baht(COMPANY.altCost)} against ${baht(COMPANY.annualCost)} today. The recommended mission is to negotiate the incumbent. If the price were already inside the observed range, the same engine would say no action.`,
+      "shadow",
+      "Open the shadow market",
+    ],
+    [
+      /fair price|price discovery|what fee/,
+      "Fee Analyst",
+      `Public references and EPF24’s sample transaction book are different layers. For this mandate the observed competitive zone sits near 0.19–0.22%, below a 0.30% all-in. The count of observations is shown with the range. It is a prototype book, not a live tape.`,
+      "fair",
+      "Open Fair Price",
+    ],
+    [
+      /dna|which provider|provider fit|behavior/,
+      "Provider Agent",
+      `Provider DNA is a behavioral profile: where a firm is strong, how it prices by mandate size, and whether it usually moves when challenged. A league table of returns does not carry that.`,
+      "dna",
+      "Open Provider DNA",
+    ],
+    [
+      /negotiat|repric|negotiate for me/,
       "Negotiation Agent",
-      `Current pricing is 0.30%. Comparable qualified offers sit around 0.19–0.22%. A realistic reprice toward 0.235% is about ${baht(COMPANY.renegotiateSaving)} a year. A full best-fit switch is about ${baht(COMPANY.feeSaving)}. EPF24 can draft target pricing, evidence and a management paper. Switching is optional.`,
-      "market",
-      "Open negotiation pack",
+      `Current pricing is 0.30%. The sample book of comparable outcomes sits around 0.19–0.22%. A realistic reprice toward 0.235% is about ${baht(COMPANY.renegotiateSaving)} a year. The negotiation twin can draft the counterproposal. It does not send it without approval.`,
+      "nego",
+      "Open the negotiation twin",
+    ],
+    [
+      /corporate twin|digital twin|shock|what if we switch|what if fees/,
+      "Retirement Agent",
+      `The corporate digital twin is the whole fund: workforce, fees, policies and projections. Member twins stay private. Switching, a fee cut, Life Path, a higher match and a market shock are separate simulations.`,
+      "twin",
+      "Open the corporate twin",
+    ],
+    [
+      /intervention|adequacy|what should we do/,
+      "Workforce Analyst",
+      `The intervention engine searches contribution, match, default portfolio and education as separate scenarios. Each one shows employer cost beside the adequacy change. There is no single correct answer.`,
+      "intervene",
+      "Open interventions",
+    ],
+    [
+      /outcome|actually happened|prediction accuracy|learn/,
+      "Outcome Engine",
+      `A recommendation is not the moat. The moat is the measured result after the decision: predicted saving versus the saving that landed, plus service and participation afterward.`,
+      "outcome",
+      "Open the outcome engine",
+    ],
+    [
+      /exchange|mandate|liquidity|marketplace bid/,
+      "Market Agent",
+      `The exchange is a continuous mandate market. An employer can publish assets, headcount and requirements without a name. Qualified providers compete on one format. Every bid feeds the market brain.`,
+      "exchange",
+      "Open the exchange",
+    ],
+    [
+      /market brain|transaction|knowledge graph|moat/,
+      "EPF Intelligence Agent",
+      `The market brain connects employer, workforce, contract, fee, offer, negotiation, decision and what happened next. Public factsheets are the base layer. The private layer is the transaction graph.`,
+      "brain",
+      "Open the market brain",
     ],
     [
       /tender|rfp|auction|bid/,
@@ -416,7 +492,7 @@ export function answerFor(q: string): { agent: string; a: string; screen: Screen
       "Start EPF tender",
     ],
     [
-      /retire|enough|employee|member|twin/,
+      /retire|enough|employee|member twin|my retirement/,
       "Retirement Agent",
       `The sample member twin starts from a current balance and compounds with a deterministic engine. Across the workforce, ${Math.round(COMPANY.onTrack * 100)}% are projected on track for a 60% income-replacement target. The 51+ band is the weakest. Figures are scenarios, not guaranteed returns.`,
       "employees",

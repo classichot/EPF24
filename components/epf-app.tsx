@@ -175,12 +175,18 @@ export function EpfApp() {
           <button className="icon-btn" type="button" title={collapsed ? "Expand menu" : "Collapse menu"} onClick={() => setCollapsed((c) => !c)}>{collapsed ? "»" : "«"}</button>
         </div>
         <nav>
-          {NAV.map((item, i) => (
-            <button key={item.id} className={screen === item.id ? "nav-btn on" : "nav-btn"} title={item.label} type="button" onClick={() => goto(item.id)}>
-              <span>{String(i + 1).padStart(2, "0")}</span>
-              {!collapsed && <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
-            </button>
-          ))}
+          {NAV.map((item, i) => {
+            const showGroup = !collapsed && (i === 0 || NAV[i - 1].group !== item.group);
+            return (
+              <div key={item.id}>
+                {showGroup && <div className="nav-group">{item.group}</div>}
+                <button className={screen === item.id ? "nav-btn on" : "nav-btn"} title={item.label} type="button" onClick={() => goto(item.id)}>
+                  <span>{String(i + 1).padStart(2, "0")}</span>
+                  {!collapsed && <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
+                </button>
+              </div>
+            );
+          })}
         </nav>
         {!collapsed && (
           <div className="side-foot">
