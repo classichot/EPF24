@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState, type FormEvent, type MouseEvent as ReactMouseEvent } from "react";
-import { agiSteps, type AgiMode } from "@/lib/moat";
-import { COMPANY, DEFAULT_WEIGHTS, NAV, answerFor, baht, type ScreenId } from "@/lib/model";
+import { agiSteps } from "@/lib/moat";
+import { AGI_SCREENS, COMPANY, DEFAULT_WEIGHTS, NAV, answerFor, baht, type ScreenId } from "@/lib/model";
 import { Views, type Api, type Design, type Doc, type Emp } from "@/components/views";
 
 const DOCS: Doc[] = [
@@ -45,6 +45,7 @@ export function EpfApp() {
   const [design, setDesignState] = useState<Design>({ young: 3, mid: 5, tenured: 7, employee: 5, policy: "life" });
   const [mStep, setMStep] = useState(-1);
   const [agi, setAgi] = useState<Api["agi"]>("team");
+  const [agiOn, setAgiOn] = useState(false);
   const [docs, setDocs] = useState<Doc[]>(DOCS);
   const [reports, setReports] = useState<number[]>([]);
 
@@ -54,12 +55,13 @@ export function EpfApp() {
       if (raw?.w) setSideW(raw.w);
       if (typeof raw?.c === "boolean") setCollapsed(raw.c);
       if (raw?.theme === "dark" || raw?.theme === "light") setTheme(raw.theme);
+      if (typeof raw?.agi === "boolean") setAgiOn(raw.agi);
     } catch { /* ignore */ }
   }, []);
 
   useEffect(() => {
-    try { localStorage.setItem("epf24-ui", JSON.stringify({ w: sideW, c: collapsed, theme })); } catch { /* ignore */ }
-  }, [sideW, collapsed, theme]);
+    try { localStorage.setItem("epf24-ui", JSON.stringify({ w: sideW, c: collapsed, theme, agi: agiOn })); } catch { /* ignore */ }
+  }, [sideW, collapsed, theme, agiOn]);
 
   useEffect(() => {
     if (bench !== 1) return;
@@ -83,8 +85,16 @@ export function EpfApp() {
   }, [mStep, missionLen]);
 
   function goto(next: ScreenId) {
+    if (next !== "home") setAgiOn(AGI_SCREENS.has(next));
     setScreen(next);
     window.scrollTo(0, 0);
+  }
+
+  function toggleAgi() {
+    const next = !agiOn;
+    setAgiOn(next);
+    if (!next && AGI_SCREENS.has(screen)) setScreen("home");
+    if (next && screen !== "home" && !AGI_SCREENS.has(screen)) setScreen("mission");
   }
 
   function startDrag(e: ReactMouseEvent) {
@@ -170,24 +180,29 @@ export function EpfApp() {
           {!collapsed && (
             <div>
               <div className="brand-mark">EPF24</div>
-              <div className="brand-sub">Intelligence and exchange layer</div>
+              <div className="brand-sub">{agiOn ? "Intelligence and exchange layer" : "Employee Provident Fund Intelligence"}</div>
             </div>
           )}
           <button className="icon-btn" type="button" title={collapsed ? "Expand menu" : "Collapse menu"} onClick={() => setCollapsed((c) => !c)}>{collapsed ? "»" : "«"}</button>
         </div>
+        <div className={collapsed ? "agi-toggle slim" : "agi-toggle"} title="Turn AGI mode on or off">
+          {collapsed ? (
+            <button type="button" className={agiOn ? "on" : ""} onClick={toggleAgi}>AGI</button>
+          ) : (
+            <>
+              <button type="button" className={agiOn ? "" : "on"} onClick={() => { if (agiOn) toggleAgi(); }}>Work</button>
+              <button type="button" className={agiOn ? "on" : ""} onClick={() => { if (!agiOn) toggleAgi(); }}>AGI</button>
+            </>
+          )}
+        </div>
         <nav>
-          {NAV.map((item, i) => {
-            const showGroup = !collapsed && (i === 0 || NAV[i - 1].group !== item.group);
-            return (
-              <div key={item.id}>
-                {showGroup && <div className="nav-group">{item.group}</div>}
-                <button className={screen === item.id ? "nav-btn on" : "nav-btn"} title={item.label} type="button" onClick={() => goto(item.id)}>
-                  <span>{String(i + 1).padStart(2, "0")}</span>
-                  {!collapsed && <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
-                </button>
-              </div>
-            );
-          })}
+          {!collapsed && <div className="nav-group">{agiOn ? "AGI mode" : "Work"}</div>}
+          {NAV.filter((item) => agiOn ? item.menu === "agi" || item.id === "home" : item.menu === "work").map((item, i) => (
+            <button key={item.id} className={screen === item.id ? "nav-btn on" : "nav-btn"} title={item.label} type="button" onClick={() => goto(item.id)}>
+              <span>{String(i + 1).padStart(2, "0")}</span>
+              {!collapsed && <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
+            </button>
+          ))}
         </nav>
         {!collapsed && (
           <div className="side-foot">
@@ -205,11 +220,6 @@ export function EpfApp() {
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Ask EPF24 anything about your provident fund…" />
             <button className="btn btn-primary" type="submit">Ask →</button>
           </form>
-          <div className="agi-switch" title="AGI mode">
-            {(["single", "team", "swarm"] as AgiMode[]).map((mode) => (
-              <button key={mode} type="button" className={agi === mode ? "on" : ""} onClick={() => { setAgi(mode); setMStep(-1); }}>{mode === "single" ? "Single" : mode === "team" ? "Team" : "Swarm"}</button>
-            ))}
-          </div>
           <button className="btn btn-secondary" type="button" onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}>{theme === "dark" ? "☀ Light mode" : "☾ Dark mode"}</button>
           <div className="who"><b>K. Suda Wongsa</b><span>HR Director · Committee Secretary</span></div>
         </header>
