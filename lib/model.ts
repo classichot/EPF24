@@ -28,38 +28,44 @@ export type ScreenId =
   | "reports"
   | "settings";
 
-export const NAV: { id: ScreenId; label: string; menu: "work" | "agi" }[] = [
-  { id: "home", label: "Home", menu: "work" },
-  { id: "intel", label: "EPF Intelligence", menu: "work" },
-  { id: "compare", label: "Compare", menu: "work" },
-  { id: "bench", label: "Benchmark", menu: "work" },
-  { id: "gap", label: "Value Gap", menu: "work" },
-  { id: "market", label: "Market Test", menu: "work" },
-  { id: "tender", label: "Tender", menu: "work" },
-  { id: "marketplace", label: "Marketplace", menu: "work" },
-  { id: "watch", label: "EPF Watch", menu: "work" },
-  { id: "committee", label: "Committee AI", menu: "work" },
-  { id: "employees", label: "Employees", menu: "work" },
-  { id: "workforce", label: "Retirement Intelligence", menu: "work" },
-  { id: "designer", label: "EPF Designer", menu: "work" },
-  { id: "switching", label: "Switching", menu: "work" },
-  { id: "docs", label: "Documents", menu: "work" },
-  { id: "reports", label: "Reports", menu: "work" },
-  { id: "settings", label: "Settings", menu: "work" },
-  { id: "mission", label: "AGI Mission", menu: "agi" },
-  { id: "cio", label: "Autonomous CIO", menu: "agi" },
-  { id: "brain", label: "Market Brain", menu: "agi" },
-  { id: "shadow", label: "Shadow Market", menu: "agi" },
-  { id: "fair", label: "Fair Price", menu: "agi" },
-  { id: "dna", label: "Provider DNA", menu: "agi" },
-  { id: "nego", label: "Negotiation Twin", menu: "agi" },
-  { id: "twin", label: "Digital Twin", menu: "agi" },
-  { id: "intervene", label: "Intervention", menu: "agi" },
-  { id: "outcome", label: "Outcome Engine", menu: "agi" },
-  { id: "exchange", label: "Exchange", menu: "agi" },
+export const NAV: { id: ScreenId; label: string; group: "board" | "intel" | "ops"; agi?: boolean }[] = [
+  { id: "home", label: "Home", group: "board" },
+  { id: "gap", label: "Value Gap", group: "board" },
+  { id: "watch", label: "EPF Watch", group: "board" },
+  { id: "committee", label: "Committee AI", group: "board" },
+  { id: "reports", label: "Reports", group: "board" },
+  { id: "mission", label: "AGI Mission", group: "board", agi: true },
+  { id: "cio", label: "Autonomous CIO", group: "board", agi: true },
+  { id: "intel", label: "EPF Intelligence", group: "intel" },
+  { id: "compare", label: "Compare", group: "intel" },
+  { id: "bench", label: "Benchmark", group: "intel" },
+  { id: "employees", label: "Employees", group: "intel" },
+  { id: "workforce", label: "Retirement Intelligence", group: "intel" },
+  { id: "brain", label: "Market Brain", group: "intel", agi: true },
+  { id: "shadow", label: "Shadow Market", group: "intel", agi: true },
+  { id: "fair", label: "Fair Price", group: "intel", agi: true },
+  { id: "dna", label: "Provider DNA", group: "intel", agi: true },
+  { id: "nego", label: "Negotiation Twin", group: "intel", agi: true },
+  { id: "twin", label: "Digital Twin", group: "intel", agi: true },
+  { id: "intervene", label: "Intervention", group: "intel", agi: true },
+  { id: "outcome", label: "Outcome Engine", group: "intel", agi: true },
+  { id: "exchange", label: "Exchange", group: "intel", agi: true },
+  { id: "market", label: "Market Test", group: "ops" },
+  { id: "tender", label: "Tender", group: "ops" },
+  { id: "marketplace", label: "Marketplace", group: "ops" },
+  { id: "designer", label: "EPF Designer", group: "ops" },
+  { id: "switching", label: "Switching", group: "ops" },
+  { id: "docs", label: "Documents", group: "ops" },
+  { id: "settings", label: "Settings", group: "ops" },
 ];
 
-export const AGI_SCREENS = new Set(NAV.filter((item) => item.menu === "agi").map((item) => item.id));
+export const NAV_GROUPS: { id: (typeof NAV)[number]["group"]; label: string }[] = [
+  { id: "board", label: "Dashboard and decision board" },
+  { id: "intel", label: "Intelligences and\nsuper intelligence" },
+  { id: "ops", label: "Operations" },
+];
+
+export const AGI_SCREENS = new Set(NAV.filter((item) => item.agi).map((item) => item.id));
 
 export const COMPANY = {
   name: "Rattana Group PCL",

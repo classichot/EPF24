@@ -293,9 +293,18 @@ input[type="range"] { accent-color: var(--color-accent); width: 100%; }
 .nav-group {
   padding: 14px 16px 4px;
   font-size: 10px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   opacity: 0.7;
+  line-height: 1.35;
+  white-space: pre-line;
+}
+.nav-sub {
+  padding: 10px 16px 2px 28px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.55;
 }
 .side-foot {
   border-top: 2px solid var(--color-accent-deep);

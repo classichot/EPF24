@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type FormEvent, type MouseEvent as ReactMouseEvent } from "react";
 import { agiSteps } from "@/lib/moat";
-import { AGI_SCREENS, COMPANY, DEFAULT_WEIGHTS, NAV, answerFor, baht, type ScreenId } from "@/lib/model";
+import { AGI_SCREENS, COMPANY, DEFAULT_WEIGHTS, NAV, NAV_GROUPS, answerFor, baht, type ScreenId } from "@/lib/model";
 import { Views, type Api, type Design, type Doc, type Emp } from "@/components/views";
 
 const DOCS: Doc[] = [
@@ -85,7 +85,7 @@ export function EpfApp() {
   }, [mStep, missionLen]);
 
   function goto(next: ScreenId) {
-    if (next !== "home") setAgiOn(AGI_SCREENS.has(next));
+    if (AGI_SCREENS.has(next)) setAgiOn(true);
     setScreen(next);
     window.scrollTo(0, 0);
   }
@@ -94,7 +94,6 @@ export function EpfApp() {
     const next = !agiOn;
     setAgiOn(next);
     if (!next && AGI_SCREENS.has(screen)) setScreen("home");
-    if (next && screen !== "home" && !AGI_SCREENS.has(screen)) setScreen("mission");
   }
 
   function startDrag(e: ReactMouseEvent) {
@@ -185,24 +184,41 @@ export function EpfApp() {
           )}
           <button className="icon-btn" type="button" title={collapsed ? "Expand menu" : "Collapse menu"} onClick={() => setCollapsed((c) => !c)}>{collapsed ? "»" : "«"}</button>
         </div>
-        <div className={collapsed ? "agi-toggle slim" : "agi-toggle"} title="Turn AGI mode on or off">
+        {!collapsed && <div className="nav-group" style={{ paddingBottom: 0 }}>Super intelligence</div>}
+        <div className={collapsed ? "agi-toggle slim" : "agi-toggle"} title="Show or hide super intelligence">
           {collapsed ? (
             <button type="button" className={agiOn ? "on" : ""} onClick={toggleAgi}>AGI</button>
           ) : (
             <>
-              <button type="button" className={agiOn ? "" : "on"} onClick={() => { if (agiOn) toggleAgi(); }}>Work</button>
-              <button type="button" className={agiOn ? "on" : ""} onClick={() => { if (!agiOn) toggleAgi(); }}>AGI</button>
+              <button type="button" className={agiOn ? "" : "on"} onClick={() => { if (agiOn) toggleAgi(); }}>Off</button>
+              <button type="button" className={agiOn ? "on" : ""} onClick={() => { if (!agiOn) toggleAgi(); }}>On</button>
             </>
           )}
         </div>
         <nav>
-          {!collapsed && <div className="nav-group">{agiOn ? "AGI mode" : "Work"}</div>}
-          {NAV.filter((item) => agiOn ? item.menu === "agi" || item.id === "home" : item.menu === "work").map((item, i) => (
-            <button key={item.id} className={screen === item.id ? "nav-btn on" : "nav-btn"} title={item.label} type="button" onClick={() => goto(item.id)}>
-              <span>{String(i + 1).padStart(2, "0")}</span>
-              {!collapsed && <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
-            </button>
-          ))}
+          {NAV_GROUPS.map((group) => {
+            const items = NAV.filter((item) => item.group === group.id && (!item.agi || agiOn));
+            const plain = items.filter((item) => !item.agi);
+            const superItems = items.filter((item) => item.agi);
+            return (
+              <div key={group.id}>
+                {!collapsed && <div className="nav-group">{group.label}</div>}
+                {plain.map((item, i) => (
+                  <button key={item.id} className={screen === item.id ? "nav-btn on" : "nav-btn"} title={item.label} type="button" onClick={() => goto(item.id)}>
+                    <span>{String(i + 1).padStart(2, "0")}</span>
+                    {!collapsed && <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
+                  </button>
+                ))}
+                {superItems.length > 0 && !collapsed && <div className="nav-sub">Super intelligence</div>}
+                {superItems.map((item, i) => (
+                  <button key={item.id} className={screen === item.id ? "nav-btn on" : "nav-btn"} title={item.label} type="button" onClick={() => goto(item.id)}>
+                    <span>{String(plain.length + i + 1).padStart(2, "0")}</span>
+                    {!collapsed && <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
+                  </button>
+                ))}
+              </div>
+            );
+          })}
         </nav>
         {!collapsed && (
           <div className="side-foot">
