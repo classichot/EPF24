@@ -48,6 +48,8 @@ export function EpfApp() {
   const [agiOn, setAgiOn] = useState(false);
   const [docs, setDocs] = useState<Doc[]>(DOCS);
   const [reports, setReports] = useState<number[]>([]);
+  const [ready, setReady] = useState(false);
+  const [closed, setClosed] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     try {
@@ -56,12 +58,15 @@ export function EpfApp() {
       if (typeof raw?.c === "boolean") setCollapsed(raw.c);
       if (raw?.skin === "console" && (raw.theme === "dark" || raw.theme === "light")) setTheme(raw.theme);
       if (typeof raw?.agi === "boolean") setAgiOn(raw.agi);
+      if (raw?.closed && typeof raw.closed === "object") setClosed(raw.closed);
     } catch { /* ignore */ }
+    setReady(true);
   }, []);
 
   useEffect(() => {
-    try { localStorage.setItem("epf24-ui", JSON.stringify({ w: sideW, c: collapsed, theme, agi: agiOn, skin: "console" })); } catch { /* ignore */ }
-  }, [sideW, collapsed, theme, agiOn]);
+    if (!ready) return;
+    try { localStorage.setItem("epf24-ui", JSON.stringify({ w: sideW, c: collapsed, theme, agi: agiOn, skin: "console", closed })); } catch { /* ignore */ }
+  }, [ready, sideW, collapsed, theme, agiOn, closed]);
 
   useEffect(() => {
     if (bench !== 1) return;
@@ -94,6 +99,10 @@ export function EpfApp() {
     const next = !agiOn;
     setAgiOn(next);
     if (!next && AGI_SCREENS.has(screen)) setScreen("home");
+  }
+
+  function toggleGroup(id: string) {
+    setClosed((cur) => ({ ...cur, [id]: !cur[id] }));
   }
 
   function startDrag(e: ReactMouseEvent) {
@@ -196,32 +205,28 @@ export function EpfApp() {
           )}
         </div>
         <nav>
-          {agiOn ? (
-            <div>
-              {!collapsed && <div className="nav-group">AGI mode</div>}
-              {NAV.filter((item) => item.agi).map((item, i) => (
-                <button key={item.id} className={screen === item.id ? "nav-btn on" : "nav-btn"} title={item.label} type="button" onClick={() => goto(item.id)}>
-                  <span>{String(i + 1).padStart(2, "0")}</span>
-                  {!collapsed && <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
-                </button>
-              ))}
-            </div>
-          ) : (
-            NAV_GROUPS.map((group) => {
-              const plain = NAV.filter((item) => item.group === group.id && !item.agi);
-              return (
-                <div key={group.id}>
-                  {!collapsed && <div className="nav-group">{group.label}</div>}
-                  {plain.map((item, i) => (
-                    <button key={item.id} className={screen === item.id ? "nav-btn on" : "nav-btn"} title={item.label} type="button" onClick={() => goto(item.id)}>
-                      <span>{String(i + 1).padStart(2, "0")}</span>
-                      {!collapsed && <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
-                    </button>
-                  ))}
-                </div>
-              );
-            })
-          )}
+          {(agiOn
+            ? [{ id: "agi", label: "AGI mode", items: NAV.filter((item) => item.agi) }]
+            : NAV_GROUPS.map((group) => ({ id: group.id, label: group.label, items: NAV.filter((item) => item.group === group.id && !item.agi) }))
+          ).map((group) => {
+            const shut = !collapsed && !!closed[group.id];
+            return (
+              <div key={group.id}>
+                {!collapsed && (
+                  <button className="nav-group" type="button" aria-expanded={!shut} onClick={() => toggleGroup(group.id)}>
+                    <span>{group.label}</span>
+                    <span>{shut ? "+" : "–"}</span>
+                  </button>
+                )}
+                {!shut && group.items.map((item, i) => (
+                  <button key={item.id} className={screen === item.id ? "nav-btn on" : "nav-btn"} title={item.label} type="button" onClick={() => goto(item.id)}>
+                    <span>{String(i + 1).padStart(2, "0")}</span>
+                    {!collapsed && <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
+                  </button>
+                ))}
+              </div>
+            );
+          })}
         </nav>
         {!collapsed && (
           <div className="side-foot">
