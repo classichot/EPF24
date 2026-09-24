@@ -1,4 +1,4 @@
-import { COMPANY, PROVIDERS, annualCost, baht, feeLabel, wealthDifference, workforceAt } from "@/lib/model";
+import { COMPANY, PROVIDERS, annualCost, baht, feeLabel, projectMember, wealthDifference, workforceAt, type ScreenId } from "@/lib/model";
 
 export const LAYERS = [
   { k: "1 · Public intelligence", lock: "Base", v: "SEC, ThaiPVD, AMC factsheets, market data. In 2024, 61.2% of employers offered choice and 6.7% offered Life Path." },
@@ -107,7 +107,115 @@ export const DNA: Record<string, { best: string[]; price: string[]; service: str
   },
 };
 
-export type TwinId = "switch" | "fee20" | "life" | "match" | "shift" | "shock";
+export const ENGINES: { id: string; name: string; q: string; screen: ScreenId }[] = [
+  { id: "brain", name: "Market Brain", q: "What is happening in the market?", screen: "brain" },
+  { id: "twin", name: "Digital Twin", q: "What is happening inside this employer?", screen: "twin" },
+  { id: "shadow", name: "Shadow Market", q: "What would the market offer this employer today?", screen: "shadow" },
+  { id: "outcome", name: "Outcome Engine", q: "What could improve the outcome, and what actually happened?", screen: "outcome" },
+];
+
+export const DEFENSE: { capability: string; level: string }[] = [
+  { capability: "AI chatbot", level: "Low" },
+  { capability: "Fund comparison", level: "Low" },
+  { capability: "RFP generator", level: "Low" },
+  { capability: "Retirement calculator", level: "Low" },
+  { capability: "Public fund database", level: "Medium" },
+  { capability: "Employer digital twin", level: "High" },
+  { capability: "Proprietary tender history", level: "Very high" },
+  { capability: "Fair Price", level: "Very high" },
+  { capability: "Provider DNA", level: "Very high" },
+  { capability: "Negotiation Twin", level: "Very high" },
+  { capability: "Shadow Market", level: "Very high" },
+  { capability: "Post-decision outcomes", level: "Extremely high" },
+  { capability: "Transaction graph", level: "Extremely high" },
+  { capability: "Exchange network", level: "Extremely high" },
+];
+
+export const TAPE = ["Asking price", "Bid", "Counterbid", "Final price", "Winner", "Implementation", "Actual outcome"];
+
+export type AgiMode = "single" | "team" | "swarm";
+
+export type AgiStep = { agent: string; task: string; kind: string; screen: ScreenId };
+
+export function agiSteps(mode: AgiMode, competitive: boolean): AgiStep[] {
+  const quote = fairPriceQuote(COMPANY.aum);
+  const zone = `${feeLabel(quote.low)}–${feeLabel(quote.high)}`;
+  const brain: AgiStep = {
+    agent: "Market Brain",
+    task: competitive
+      ? `Observed zone ${zone} across ${quote.observations} anonymized cases. The current 0.30% sits above that tape.`
+      : `Observed zone ${zone}. This price is already inside it, so the tape does not support a challenge.`,
+    kind: "Transaction tape",
+    screen: "brain",
+  };
+  const twin: AgiStep = {
+    agent: "Digital Twin",
+    task: `${COMPANY.members.toLocaleString("en-US")} members, ${baht(COMPANY.aum)}, match 5%, on-track 64%. The shortfall is inside the fund, not only in the fee.`,
+    kind: "Employer model",
+    screen: "twin",
+  };
+  const shadow: AgiStep = {
+    agent: "Shadow Market",
+    task: competitive
+      ? `Virtual tender: current ${baht(COMPANY.annualCost)}, best fit ${baht(COMPANY.altCost)}, three better-fit alternatives.`
+      : "Virtual tender finds no price that beats an arrangement already inside the observed zone.",
+    kind: "Virtual tender",
+    screen: "shadow",
+  };
+  const outcome: AgiStep = {
+    agent: "Outcome Engine",
+    task: "Closed cases keep predicted saving next to the saving that was actually booked. This employer’s result is still open.",
+    kind: "Closed loop",
+    screen: "outcome",
+  };
+  const core = [brain, twin, shadow, outcome];
+  if (mode === "single") return [brain];
+  if (mode === "team") return core;
+  return [
+    ...core,
+    {
+      agent: "Intervention",
+      task: "Search match, Life Path, contribution and fee cases. Present the trade. Do not pick a universal winner.",
+      kind: "Scenario search",
+      screen: "intervene",
+    },
+    {
+      agent: "Independent Challenger",
+      task: `Separate the ${baht(COMPANY.feeSaving)} fee comparison from the ${baht(COMPANY.investOpp)} investment scenario. Do not add them and call the sum cash.`,
+      kind: "Disproof",
+      screen: "cio",
+    },
+    {
+      agent: "Autonomous CIO",
+      task: competitive
+        ? "Choose among negotiate, market-test, redesign, switch, or do nothing. Hold the pack for a person."
+        : "The evidence supports no action. Hold that conclusion for a person.",
+      kind: "Human still decides",
+      screen: "cio",
+    },
+  ];
+}
+
+export function agiVerdict(competitive: boolean) {
+  if (!competitive) {
+    return {
+      action: "No action",
+      body: "Current arrangement remains competitive. A tender would spend committee time to confirm what the transaction tape already shows.",
+      paying: "No",
+      outcomes: "Unchanged",
+      alternatives: "None that clear the current price",
+    };
+  }
+  return {
+    action: "Negotiate",
+    body: `The company is paying about ${baht(COMPANY.feeSaving)} a year above the best-fit price. Employee outcomes are 64% on track. Three better-fit alternatives sit in the shadow market. A switch is not required to start.`,
+    paying: `Yes · ${baht(COMPANY.feeSaving)} / year`,
+    outcomes: "64% on track · 36% short of the 60% replacement target",
+    alternatives: "3 better-fit providers",
+  };
+}
+
+export type TwinId = "switch" | "fee20" | "fee25" | "life" | "match" | "shift" | "shock" | "contrib2";
 
 export function twinRun(id: TwinId) {
   const ten = wealthDifference(10);
@@ -152,6 +260,24 @@ export function twinRun(id: TwinId) {
       title: "30% of members move from fixed income toward Life Path",
       lines: ["No employer cost increase", "Planning assumption: on-track rate 64% → 68%", "Risk rises for the members who move"],
       note: "This is a mix-shift scenario. It is not a forecast of who will actually switch.",
+    };
+  }
+  if (id === "fee25") {
+    const cut = COMPANY.annualCost * 0.25;
+    return {
+      title: "Fees fall 25%",
+      lines: [`Corporate cost falls by ${baht(cut)} / year`, "Employee contribution and match unchanged", "Retirement adequacy unchanged in this case"],
+      note: "A larger fee cut is still a corporate saving. It does not repair a contribution or default-policy gap.",
+    };
+  }
+  if (id === "contrib2") {
+    const sample = { age: 34, retireAge: 60, balance: 1_280_000, salaryMonthly: 32_000, employer: 5, growth: 3, infl: 2, policy: "bal", scenario: "base" as const };
+    const now = projectMember({ ...sample, contrib: 3 });
+    const next = projectMember({ ...sample, contrib: 5 });
+    return {
+      title: "Employees contribute another 2 points",
+      lines: ["Employer cost unchanged", `Sample member at 60: ${baht(now.bal)} → ${baht(next.bal)}`, `Difference ${baht(next.bal - now.bal)} on that one member`],
+      note: "Calculated for the sample member used elsewhere: age 34, balance ฿1.28M, salary ฿32,000, balanced policy, base scenario. It is not a workforce-wide adequacy forecast.",
     };
   }
   return {

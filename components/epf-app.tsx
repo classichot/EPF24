@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent, type MouseEvent as ReactMouseEvent } from "react";
+import { agiSteps, type AgiMode } from "@/lib/moat";
 import { COMPANY, DEFAULT_WEIGHTS, NAV, answerFor, baht, type ScreenId } from "@/lib/model";
 import { Views, type Api, type Design, type Doc, type Emp } from "@/components/views";
 
@@ -74,7 +75,7 @@ export function EpfApp() {
     return () => clearInterval(id);
   }, [bench]);
 
-  const missionLen = agi === "single" ? 1 : agi === "team" ? 4 : 8;
+  const missionLen = agiSteps(agi, true).length;
   useEffect(() => {
     if (mStep < 0 || mStep >= missionLen) return;
     const id = setInterval(() => setMStep((s) => s + 1), 700);
@@ -169,7 +170,7 @@ export function EpfApp() {
           {!collapsed && (
             <div>
               <div className="brand-mark">EPF24</div>
-              <div className="brand-sub">Employee Provident Fund Intelligence</div>
+              <div className="brand-sub">Intelligence and exchange layer</div>
             </div>
           )}
           <button className="icon-btn" type="button" title={collapsed ? "Expand menu" : "Collapse menu"} onClick={() => setCollapsed((c) => !c)}>{collapsed ? "»" : "«"}</button>
@@ -204,6 +205,11 @@ export function EpfApp() {
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Ask EPF24 anything about your provident fund…" />
             <button className="btn btn-primary" type="submit">Ask →</button>
           </form>
+          <div className="agi-switch" title="AGI mode">
+            {(["single", "team", "swarm"] as AgiMode[]).map((mode) => (
+              <button key={mode} type="button" className={agi === mode ? "on" : ""} onClick={() => { setAgi(mode); setMStep(-1); }}>{mode === "single" ? "Single" : mode === "team" ? "Team" : "Swarm"}</button>
+            ))}
+          </div>
           <button className="btn btn-secondary" type="button" onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}>{theme === "dark" ? "☀ Light mode" : "☾ Dark mode"}</button>
           <div className="who"><b>K. Suda Wongsa</b><span>HR Director · Committee Secretary</span></div>
         </header>

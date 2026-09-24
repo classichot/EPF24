@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 import { COMPANY, PROVIDERS, baht, feeLabel, wealthDifference, type ScreenId } from "@/lib/model";
 import {
+  DEFENSE,
   DNA,
   FLYWHEEL,
   LAYERS,
@@ -10,6 +11,7 @@ import {
   OUTCOMES,
   SHADOW_ALTS,
   TRANSACTIONS,
+  TAPE,
   accuracy,
   fairPriceQuote,
   interventions,
@@ -116,6 +118,18 @@ function Brain({ goto }: { goto: (id: ScreenId) => void }) {
               <div className="muted" style={{ marginTop: 4 }}>{l.v}</div>
             </div>
           ))}
+          <h6>What a competitor can copy</h6>
+          <table className="table">
+            <thead><tr><th>Capability</th><th>Defensibility</th></tr></thead>
+            <tbody>
+              {DEFENSE.map((row) => (
+                <tr key={row.capability}>
+                  <td>{row.capability}</td>
+                  <td><b>{row.level}</b></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
         <div>
           <h6>How the book compounds</h6>
@@ -316,6 +330,8 @@ function Twin() {
   const questions: { id: TwinId; q: string }[] = [
     { id: "switch", q: "What if we switch provider?" },
     { id: "fee20", q: "What if fees fall 20%?" },
+    { id: "fee25", q: "What if fees fall 25%?" },
+    { id: "contrib2", q: "What if employees contribute another 2%?" },
     { id: "life", q: "What if we add Life Path?" },
     { id: "match", q: "What if matching goes from 5% to 7%?" },
     { id: "shift", q: "What if 30% move toward Life Path?" },
@@ -456,6 +472,16 @@ function Exchange() {
         </div>
         <div>Potential corporate saving versus the best indication: {baht(mkt.saving)} / year. Identity of the employer is not on the mandate.</div>
       </section>
+      <h6>What the exchange records</h6>
+      <div className="rule">
+        {TAPE.map((step, i) => (
+          <div key={step} style={{ display: "grid", gridTemplateColumns: "28px 1fr auto", gap: 8, padding: "8px 0", borderBottom: "1px solid var(--color-divider)" }}>
+            <b>{i + 1}</b>
+            <span>{step}</span>
+            <span className="muted">{current.id === "EPF-RATTANA" && i > 3 ? "Not yet" : "On the tape"}</span>
+          </div>
+        ))}
+      </div>
       <p className="muted">Indications are standardized to the EPF24 all-in basis before they are shown. A provider’s portal fee, if any, does not change the order.</p>
       <Trust items={["Sample mandates plus, if you publish, this employer’s profile without the name.", "Saving is current rate minus the lowest indication, times assets.", "Cheapest indication is not a recommendation to award."]} />
     </>

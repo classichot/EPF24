@@ -2,8 +2,8 @@
 
 import { useState, type ReactNode } from "react";
 import { MoatScreens } from "@/components/moat-views";
+import { ENGINES, agiSteps, agiVerdict } from "@/lib/moat";
 import {
-  AGENTS,
   COMPANY,
   CRITERIA,
   METER,
@@ -1308,57 +1308,73 @@ function Switching() {
   );
 }
 
-const MISSION_RUN = [
-  ["EPF Intelligence Agent", "Pull the peer set and current market file", "Data"],
-  ["Fee Analyst", "Normalize every fee layer versus the peer group", "Deterministic"],
-  ["Performance Analyst", "Compare 3-year net return with the benchmark", "Deterministic"],
-  ["Risk Analyst", "Drawdown and a simple stress case", "Deterministic"],
-  ["Independent Challenger", "Challenge the peer group and the period", "AI review"],
-  ["Negotiation Agent", "Draft the reprice range and talking points", "AI draft"],
-  ["Governance Agent", "Draft the committee pack", "AI draft"],
-  ["Procurement Agent", "Hold the RFP until the committee approves", "Awaiting approval"],
-];
-
 function Mission({ api }: { api: Api }) {
-  const visible = api.agi === "single" ? MISSION_RUN.slice(0, 1) : api.agi === "team" ? MISSION_RUN.slice(0, 4) : MISSION_RUN;
+  const [competitive, setCompetitive] = useState(true);
+  const visible = agiSteps(api.agi, competitive);
+  const done = api.mStep >= visible.length;
+  const verdict = agiVerdict(competitive);
   return (
     <>
-      <Head k="15 — AI Mission Center" title="Tell EPF24 the outcome. It assembles the team." lede="Numbers come from deterministic engines. Agents research, interpret, draft and challenge. Every step can be logged." />
+      <Head k="15 — AGI mode" title="The intelligence and exchange layer." lede="The moat is the tape, the provider’s behavior, this employer’s twin, and what happened after the last decision. The model only orchestrates that record. It does not replace the committee." />
       <div className="filters">
         <span className="muted">AGI mode</span>
         <Seg
-          options={[{ id: "single", label: "Single bot" }, { id: "team", label: "Team bot" }, { id: "swarm", label: "Cooperative swarm" }]}
+          options={[{ id: "single", label: "Single" }, { id: "team", label: "Team" }, { id: "swarm", label: "Swarm" }]}
           value={api.agi}
           onChange={(v) => api.setAgi(v as Api["agi"])}
         />
+        <Seg
+          options={[{ id: "now", label: "This employer" }, { id: "fair", label: "Already at fair price" }]}
+          value={competitive ? "now" : "fair"}
+          onChange={(v) => setCompetitive(v === "now")}
+        />
+      </div>
+      <div className="stats">
+        {ENGINES.map((engine) => (
+          <button key={engine.id} className="stat" type="button" onClick={() => api.goto(engine.screen)} style={{ textAlign: "left", cursor: "pointer", font: "inherit", color: "inherit" }}>
+            <span className="muted">{engine.name}</span>
+            <b style={{ fontSize: 16 }}>{engine.q}</b>
+          </button>
+        ))}
       </div>
       <div className="mission-box">
         <h6 style={{ margin: 0 }}>Mission</h6>
-        <p style={{ fontSize: 17, margin: 0, maxWidth: 900 }}>Analyze whether our current provident fund remains competitive. Quantify the value gap in baht. If the gap is material, test the market anonymously, prepare a negotiation pack, and hold a tender until the committee says go.</p>
-        <button className="btn btn-primary" onClick={api.runMission}>{api.mStep < 0 ? "Run mission →" : api.mStep >= visible.length ? "Mission complete — review" : "Running…"}</button>
+        <p style={{ fontSize: 17, margin: 0, maxWidth: 900 }}>Is this provident fund still competitive? If the tape says yes, stop. If it says no, name the action: negotiate, market-test, redesign, or switch. A person approves before anything is sent.</p>
+        <button className="btn btn-primary" onClick={api.runMission}>{api.mStep < 0 ? "Run mission →" : done ? "Mission complete — review" : "Running…"}</button>
       </div>
+      {done && (
+        <section className="poster">
+          <div className="kicker">Autonomous CIO · {api.agi === "single" ? "Market Brain only" : api.agi === "team" ? "Four engines" : "Swarm, held for a person"}</div>
+          <div className="poster-num" style={{ fontSize: 48 }}>{verdict.action}</div>
+          <div>{verdict.body}</div>
+          <div className="poster-grid">
+            <div><b>{verdict.paying}</b><span>Paying too much?</span></div>
+            <div><b>{verdict.outcomes}</b><span>Employee outcomes</span></div>
+            <div><b>{verdict.alternatives}</b><span>Better alternatives</span></div>
+          </div>
+        </section>
+      )}
       <div className="split">
         <div style={{ borderTop: "2px solid var(--color-text)" }}>
-          {visible.map(([agent, t, kind], i) => {
+          {visible.map((step, i) => {
             const st = api.mStep < 0 ? "Planned" : i < api.mStep ? (i === visible.length - 1 && api.agi === "swarm" ? "Held" : "Done") : i === api.mStep ? "Running" : "Queued";
             return (
-              <div key={agent} style={{ display: "grid", gridTemplateColumns: "28px 1fr 1.4fr 88px", gap: 12, padding: "12px 0", borderBottom: "1px solid var(--color-divider)", opacity: api.mStep < 0 || i <= api.mStep ? 1 : 0.45 }}>
+              <button key={step.agent} type="button" onClick={() => api.goto(step.screen)} style={{ display: "grid", gridTemplateColumns: "28px 1fr 88px", gap: 12, padding: "12px 0", borderBottom: "1px solid var(--color-divider)", borderLeft: 0, borderRight: 0, borderTop: 0, background: "transparent", textAlign: "left", width: "100%", font: "inherit", color: "inherit", cursor: "pointer", opacity: api.mStep < 0 || i <= api.mStep ? 1 : 0.45 }}>
                 <b>{i + 1}</b>
-                <b>{agent}</b>
-                <span>{t} · {kind}</span>
+                <span><b>{step.agent}</b><span className="muted"> · {step.kind}</span><div>{step.task}</div></span>
                 <b style={{ color: st === "Done" ? GOOD : st === "Running" || st === "Held" ? WARN : "var(--color-neutral-700)", fontSize: 12 }}>{st}</b>
-              </div>
+              </button>
             );
           })}
         </div>
         <div>
-          <h6>Specialists</h6>
-          <div className="agents">
-            {AGENTS.map(([n, d]) => (
-              <div key={n}><b style={{ fontSize: 13 }}>{n}</b><div className="muted">{d}</div></div>
-            ))}
+          <h6>What each mode is allowed to see</h6>
+          <div className="rule">
+            <p><b>Single.</b> Market Brain only. One reading of the transaction tape.</p>
+            <p><b>Team.</b> Market Brain, Digital Twin, Shadow Market, Outcome Engine. A conclusion, no letter.</p>
+            <p><b>Swarm.</b> The four engines, an intervention search, a challenger, then Autonomous CIO. The last step stays held until a person acts.</p>
           </div>
-          <p className="muted">Single bot runs one specialist. Team bot runs the analytical core. Cooperative swarm adds negotiation, governance, procurement and the challenger. A lead EPF agent coordinates.</p>
+          <p className="muted">Single does not see the employer twin. Team does not draft a negotiation. Swarm can recommend doing nothing when the price is already fair. None of them send a message to the provider.</p>
         </div>
       </div>
       <div>
