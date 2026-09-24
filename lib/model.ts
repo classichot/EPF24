@@ -69,7 +69,7 @@ export const NAV: { id: ScreenId; label: string; group: "board" | "intel" | "ops
 
 export const NAV_GROUPS: { id: (typeof NAV)[number]["group"]; label: string }[] = [
   { id: "board", label: "Dashboard and decision board" },
-  { id: "intel", label: "Intelligences and\nAGI mode" },
+  { id: "intel", label: "Intelligences" },
   { id: "ops", label: "Operations" },
 ];
 

@@ -196,29 +196,32 @@ export function EpfApp() {
           )}
         </div>
         <nav>
-          {NAV_GROUPS.map((group) => {
-            const items = NAV.filter((item) => item.group === group.id && (!item.agi || agiOn));
-            const plain = items.filter((item) => !item.agi);
-            const superItems = items.filter((item) => item.agi);
-            return (
-              <div key={group.id}>
-                {!collapsed && <div className="nav-group">{group.label}</div>}
-                {plain.map((item, i) => (
-                  <button key={item.id} className={screen === item.id ? "nav-btn on" : "nav-btn"} title={item.label} type="button" onClick={() => goto(item.id)}>
-                    <span>{String(i + 1).padStart(2, "0")}</span>
-                    {!collapsed && <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
-                  </button>
-                ))}
-                {superItems.length > 0 && !collapsed && <div className="nav-sub">AGI mode</div>}
-                {superItems.map((item, i) => (
-                  <button key={item.id} className={screen === item.id ? "nav-btn on" : "nav-btn"} title={item.label} type="button" onClick={() => goto(item.id)}>
-                    <span>{String(plain.length + i + 1).padStart(2, "0")}</span>
-                    {!collapsed && <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
-                  </button>
-                ))}
-              </div>
-            );
-          })}
+          {agiOn ? (
+            <div>
+              {!collapsed && <div className="nav-group">AGI mode</div>}
+              {NAV.filter((item) => item.agi).map((item, i) => (
+                <button key={item.id} className={screen === item.id ? "nav-btn on" : "nav-btn"} title={item.label} type="button" onClick={() => goto(item.id)}>
+                  <span>{String(i + 1).padStart(2, "0")}</span>
+                  {!collapsed && <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
+                </button>
+              ))}
+            </div>
+          ) : (
+            NAV_GROUPS.map((group) => {
+              const plain = NAV.filter((item) => item.group === group.id && !item.agi);
+              return (
+                <div key={group.id}>
+                  {!collapsed && <div className="nav-group">{group.label}</div>}
+                  {plain.map((item, i) => (
+                    <button key={item.id} className={screen === item.id ? "nav-btn on" : "nav-btn"} title={item.label} type="button" onClick={() => goto(item.id)}>
+                      <span>{String(i + 1).padStart(2, "0")}</span>
+                      {!collapsed && <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
+                    </button>
+                  ))}
+                </div>
+              );
+            })
+          )}
         </nav>
         {!collapsed && (
           <div className="side-foot">
