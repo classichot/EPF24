@@ -357,19 +357,20 @@ function Intel({ api }: { api: Api }) {
           <div className="stat" key={k}><b style={{ fontSize: 28 }}>{v}</b><span className="muted">{k}</span></div>
         ))}
       </div>
-      <h6>Companies that provide provident funds</h6>
-      <table className="table">
-        <thead><tr><th>Company</th><th>Life Path</th><th>RMF for PVD</th></tr></thead>
-        <tbody>
-          {PVD_MANAGERS.map((company) => (
-            <tr key={company.name}>
-              <td style={{ fontWeight: 600 }}>{company.name}</td>
-              <td>{company.life ? "Yes" : "No"}</td>
-              <td>{company.rmf ? "Yes" : "No"}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <h6>Companies that provide provident funds <span className="muted">{PVD_MANAGERS.length}</span></h6>
+      <div className="mission-grid">
+        {PVD_MANAGERS.map((company, i) => (
+          <article key={company.name} className="mcard">
+            <div className="mcard-id">{String(i + 1).padStart(2, "0")}</div>
+            <div className="mcard-title">{company.name}</div>
+            <p>Provident-fund management company. Life Path and RMF flags are the published company-list marks only.</p>
+            <div className="mcard-meta">
+              <span className={`tag ${company.life ? "tag-outline" : "tag-neutral"}`}>{company.life ? "Life Path" : "No Life Path"}</span>
+              <span className={`tag ${company.rmf ? "tag-outline" : "tag-neutral"}`}>{company.rmf ? "RMF for PVD" : "No RMF"}</span>
+            </div>
+          </article>
+        ))}
+      </div>
       <div className="filters">
         <input className="input" style={{ maxWidth: 360 }} placeholder="Search a provident fund name" value={api.search} onChange={(e) => api.setSearch(e.target.value)} />
         <Seg options={POLICY_TYPES.map((p) => ({ id: p, label: p }))} value={api.ptype} onChange={api.setPtype} />
