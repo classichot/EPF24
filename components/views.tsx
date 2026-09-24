@@ -1,13 +1,16 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { FeeScreens } from "@/components/fee-views";
 import { MoatScreens } from "@/components/moat-views";
+import { PVD_FUNDS, PVD_MANAGERS } from "@/lib/pvd-funds";
+import { CATALOG_CATEGORIES, CATALOG_MISSIONS, ENTRY_MISSIONS } from "@/lib/catalog";
 import { ENGINES, agiSteps, agiVerdict } from "@/lib/moat";
 import {
   COMPANY,
   CRITERIA,
   METER,
-  MISSIONS,
+  NAV,
   POLICY_TYPES,
   PROVIDERS,
   WATCH,
@@ -16,7 +19,6 @@ import {
   feeLabel,
   marketQuote,
   meterScore,
-  policies,
   projectMember,
   scoreBids,
   wealthDifference,
@@ -149,6 +151,8 @@ function Seg({
 export function Views({ s, api }: { s: ScreenId; api: Api }) {
   const moat = MoatScreens({ s, goto: api.goto });
   if (moat) return moat;
+  const fee = FeeScreens({ s, goto: api.goto });
+  if (fee) return fee;
   if (s === "home") return <Home api={api} />;
   if (s === "intel") return <Intel api={api} />;
   if (s === "compare") return <Compare api={api} />;
@@ -337,44 +341,54 @@ function Home({ api }: { api: Api }) {
 }
 
 function Intel({ api }: { api: Api }) {
-  const rows = policies().filter((p) => (api.ptype === "All" || p.type === api.ptype) && `${p.prov} ${p.name}`.toLowerCase().includes(api.search.toLowerCase()));
+  const q = api.search.trim().toLowerCase();
+  const rows = PVD_FUNDS.filter((fund) => (api.ptype === "All" || fund.type === api.ptype) && fund.name.toLowerCase().includes(q));
   return (
     <>
-      <Head k="02 — EPF Intelligence" title="The normalized Thai EPF market." lede="Fund managers, policies, returns, risk, fees and service, restated on one basis. This is the EPF24 intelligence data lake." />
+      <Head k="02 — EPF Intelligence" title="Registered provident funds in Thailand." lede="The mock policy names are gone. This list is the distinct fund names on the ThaiPVD employer register, plus the companies the SEC site lists as providing provident-fund services." />
       <div className="stats">
         {[
-          ["฿1.51tn", "EPF assets (public, 2024)"],
-          ["351", "Funds"],
-          ["23,779", "Employers"],
-          ["61%", "Employers offering choice"],
+          [PVD_FUNDS.length.toLocaleString("en-US"), "Distinct fund names"],
+          [String(PVD_MANAGERS.length), "PVD management companies"],
+          ["23,779", "Employers (public, 2024)"],
+          ["61.2%", "Employers offering choice"],
           ["6.7%", "Offering Life Path"],
         ].map(([v, k]) => (
           <div className="stat" key={k}><b style={{ fontSize: 28 }}>{v}</b><span className="muted">{k}</span></div>
         ))}
       </div>
+      <h6>Companies that provide provident funds</h6>
+      <table className="table">
+        <thead><tr><th>Company</th><th>Life Path</th><th>RMF for PVD</th></tr></thead>
+        <tbody>
+          {PVD_MANAGERS.map((company) => (
+            <tr key={company.name}>
+              <td style={{ fontWeight: 600 }}>{company.name}</td>
+              <td>{company.life ? "Yes" : "No"}</td>
+              <td>{company.rmf ? "Yes" : "No"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
       <div className="filters">
-        <input className="input" style={{ maxWidth: 280 }} placeholder="Search provider or policy" value={api.search} onChange={(e) => api.setSearch(e.target.value)} />
+        <input className="input" style={{ maxWidth: 360 }} placeholder="Search a provident fund name" value={api.search} onChange={(e) => api.setSearch(e.target.value)} />
         <Seg options={POLICY_TYPES.map((p) => ({ id: p, label: p }))} value={api.ptype} onChange={api.setPtype} />
-        <span className="muted">{rows.length} policies</span>
+        <span className="muted">{rows.length.toLocaleString("en-US")} names</span>
       </div>
       <div className="scroll">
         <table className="table">
-          <thead>
-            <tr>{["Provider", "Policy", "Type", "1Y", "3Y ann.", "5Y ann.", "Vol.", "Max DD", "Total cost", "Consistency"].map((h) => <th key={h} className={h === "Provider" || h === "Policy" || h === "Type" ? "" : "num"}>{h}</th>)}</tr>
-          </thead>
+          <thead><tr><th>Provident fund</th><th>Name signal</th></tr></thead>
           <tbody>
-            {rows.map((p) => (
-              <tr key={p.prov + p.name}>
-                <td style={{ fontWeight: 600 }}>{p.prov}</td>
-                <td>{p.name}</td>
-                <td><span className="tag tag-neutral">{p.type}</span></td>
-                {[p.r1, p.r3, p.r5, p.vol, p.dd, p.cost, p.cons].map((c, i) => <td key={i} className="num" style={{ fontWeight: c === p.cost ? 700 : 400 }}>{c}</td>)}
+            {rows.map((fund) => (
+              <tr key={fund.name}>
+                <td style={{ fontWeight: 600 }}>{fund.name}</td>
+                <td><span className="tag tag-neutral">{fund.type}</span></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <Trust items={["Source: SEC / ThaiPVD, AMC factsheets — sample normalized set for this prototype", "Method: fee normalization (TER + member + employer charges)", "Period: to 30 Jun 2026", "Updated: 22 Sep 2026", "Calc: deterministic"]} />
+      <Trust items={["Fund names: ThaiPVD employer register, distinct fundName values.", "Management companies and Life Path / RMF flags: thaipvd.com company list.", "Returns and fees are not on that register, so they are not filled in here.", "The Rattana worked example elsewhere is still a scenario."]} />
     </>
   );
 }
@@ -1310,6 +1324,10 @@ function Switching() {
 
 function Mission({ api }: { api: Api }) {
   const [competitive, setCompetitive] = useState(true);
+  const [entry, setEntry] = useState<string | null>(null);
+  const [category, setCategory] = useState("all");
+  const [query, setQuery] = useState("");
+  const [openId, setOpenId] = useState<string | null>(null);
   const visible = agiSteps(api.agi, competitive);
   const done = api.mStep >= visible.length;
   const verdict = agiVerdict(competitive);
@@ -1377,15 +1395,89 @@ function Mission({ api }: { api: Api }) {
           <p className="muted">Single does not see the employer twin. Team does not draft a negotiation. Swarm can recommend doing nothing when the price is already fair. None of them send a message to the provider.</p>
         </div>
       </div>
+      <Catalog api={api} entry={entry} setEntry={setEntry} category={category} setCategory={setCategory} query={query} setQuery={setQuery} />
+    </>
+  );
+}
+
+function Catalog({
+  api, entry, setEntry, category, setCategory, query, setQuery,
+}: {
+  api: Api;
+  entry: string | null;
+  setEntry: (id: string | null) => void;
+  category: string;
+  setCategory: (id: string) => void;
+  query: string;
+  setQuery: (q: string) => void;
+}) {
+  const picked = ENTRY_MISSIONS.find((item) => item.id === entry);
+  const q = query.trim().toLowerCase();
+  const list = CATALOG_MISSIONS.filter((mission) => {
+    if (picked && !picked.ids.includes(mission.id)) return false;
+    if (category !== "all" && mission.category !== category) return false;
+    if (!q) return true;
+    return `${mission.id} ${mission.title} ${mission.work} ${mission.categoryName}`.toLowerCase().includes(q);
+  });
+  const groups = CATALOG_CATEGORIES.map((group) => ({
+    ...group,
+    items: list.filter((mission) => mission.category === group.id),
+  })).filter((group) => group.items.length > 0);
+  return (
+    <div className="mission-board">
       <div>
-        <h6>Mission catalog</h6>
-        <div className="chips">
-          {MISSIONS.map((m) => (
-            <button key={m.id} className="chip" onClick={() => api.goto(m.screen)} type="button">{m.label}</button>
+        <h6>Entry missions</h6>
+        <p className="muted">Six ways in. Each card opens a set from the 120-mission catalog. Starting a mission opens the related workspace. It does not contact a provider.</p>
+        <div className="mission-grid">
+          {ENTRY_MISSIONS.map((item) => (
+            <button key={item.id} className={entry === item.id ? "mcard on" : "mcard"} type="button" onClick={() => setEntry(entry === item.id ? null : item.id)} style={{ textAlign: "left", color: "inherit", cursor: "pointer" }}>
+              <div className="mcard-id">Entry · {item.ids.length}</div>
+              <div className="mcard-title">{item.title}</div>
+              <p>{item.request}</p>
+              <div className="mcard-foot"><span className="muted">{item.deliverable}</span></div>
+            </button>
           ))}
         </div>
       </div>
-    </>
+      <div>
+        <h6>Mission catalog <span className="muted">{list.length} / {CATALOG_MISSIONS.length}</span></h6>
+        <div className="filters">
+          <input className="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search mission name or category" aria-label="Search missions" />
+          <div className="chips">
+            <button type="button" className={category === "all" ? "chip on" : "chip"} onClick={() => setCategory("all")}>All</button>
+            {CATALOG_CATEGORIES.map((group) => (
+              <button key={group.id} type="button" className={category === group.id ? "chip on" : "chip"} onClick={() => setCategory(group.id)}>{group.id}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+      {groups.map((group) => (
+        <section key={group.id} className="mission-group">
+          <h6>{group.id} · {group.name} <span className="muted">{group.items.length}</span></h6>
+          <div className="mission-grid">
+            {group.items.map((mission) => {
+              const dest = NAV.find((item) => item.id === mission.screen)?.label ?? "Open";
+              return (
+                <article key={mission.id} className="mcard">
+                  <div className="mcard-id">{mission.id}{mission.first ? " · First release" : ""}</div>
+                  <div className="mcard-title">{mission.title}</div>
+                  <p>{mission.work}</p>
+                  <div className="mcard-meta">
+                    <span className="tag tag-outline">{mission.mode}</span>
+                    <span className="tag tag-neutral">{mission.beneficiary}</span>
+                  </div>
+                  <div className="mcard-foot">
+                    <span className="muted">{mission.measure}</span>
+                    <button className="btn-start" type="button" onClick={() => api.goto(mission.screen)}>Start</button>
+                  </div>
+                  <span className="muted">Opens {dest}</span>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      ))}
+    </div>
   );
 }
 

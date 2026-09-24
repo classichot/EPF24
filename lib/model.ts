@@ -26,20 +26,26 @@ export type ScreenId =
   | "mission"
   | "docs"
   | "reports"
-  | "settings";
+  | "settings"
+  | "mypvd"
+  | "xray"
+  | "lab"
+  | "gateway";
 
 export const NAV: { id: ScreenId; label: string; group: "board" | "intel" | "ops"; agi?: boolean }[] = [
-  { id: "home", label: "Home", group: "board" },
+  { id: "home", label: "Dashboard", group: "board" },
+  { id: "mypvd", label: "My PVD", group: "board" },
+  { id: "xray", label: "Fee X-Ray", group: "board" },
   { id: "gap", label: "Value Gap", group: "board" },
+  { id: "bench", label: "Benchmark", group: "board" },
   { id: "watch", label: "EPF Watch", group: "board" },
   { id: "committee", label: "Committee AI", group: "board" },
   { id: "reports", label: "Reports", group: "board" },
   { id: "mission", label: "AGI Mission", group: "board", agi: true },
   { id: "cio", label: "Autonomous CIO", group: "board", agi: true },
-  { id: "intel", label: "EPF Intelligence", group: "intel" },
-  { id: "compare", label: "Compare", group: "intel" },
-  { id: "bench", label: "Benchmark", group: "intel" },
-  { id: "employees", label: "Employees", group: "intel" },
+  { id: "intel", label: "PVD Market", group: "intel" },
+  { id: "compare", label: "Provider comparison", group: "intel" },
+  { id: "employees", label: "Employee wealth", group: "intel" },
   { id: "workforce", label: "Retirement Intelligence", group: "intel" },
   { id: "brain", label: "Market Brain", group: "intel", agi: true },
   { id: "shadow", label: "Shadow Market", group: "intel", agi: true },
@@ -50,18 +56,20 @@ export const NAV: { id: ScreenId; label: string; group: "board" | "intel" | "ops
   { id: "intervene", label: "Intervention", group: "intel", agi: true },
   { id: "outcome", label: "Outcome Engine", group: "intel", agi: true },
   { id: "exchange", label: "Exchange", group: "intel", agi: true },
+  { id: "lab", label: "Scenario lab", group: "ops" },
   { id: "market", label: "Market Test", group: "ops" },
-  { id: "tender", label: "Tender", group: "ops" },
+  { id: "tender", label: "RFP / Tender", group: "ops" },
   { id: "marketplace", label: "Marketplace", group: "ops" },
   { id: "designer", label: "EPF Designer", group: "ops" },
   { id: "switching", label: "Switching", group: "ops" },
   { id: "docs", label: "Documents", group: "ops" },
-  { id: "settings", label: "Settings", group: "ops" },
+  { id: "gateway", label: "Public data", group: "ops" },
+  { id: "settings", label: "Admin", group: "ops" },
 ];
 
 export const NAV_GROUPS: { id: (typeof NAV)[number]["group"]; label: string }[] = [
   { id: "board", label: "Dashboard and decision board" },
-  { id: "intel", label: "Intelligences and\nsuper intelligence" },
+  { id: "intel", label: "Intelligences and\nAGI mode" },
   { id: "ops", label: "Operations" },
 ];
 
@@ -164,52 +172,7 @@ export function feeLabel(fee: number) {
   return `${text}%`;
 }
 
-export const POLICY_TYPES = ["All", "Balanced", "Equity", "Fixed income", "Life Path"] as const;
-
-export type PolicyRow = {
-  prov: string;
-  name: string;
-  type: string;
-  r1: string;
-  r3: string;
-  r5: string;
-  vol: string;
-  dd: string;
-  cost: string;
-  cons: string;
-};
-
-const CONS = ["High", "Medium", "High", "Medium", "High", "Medium"];
-
-export function policies(): PolicyRow[] {
-  const rows: PolicyRow[] = [];
-  PROVIDERS.forEach((p, i) => {
-    (
-      [
-        ["Balanced", 0, 0],
-        ["Equity", 2.1, 5.6],
-        ["Fixed income", -1.9, -4.1],
-        ["Life Path", 0.6, 0.9],
-      ] as const
-    ).forEach(([t, dr, dv], j) => {
-      if (t === "Life Path" && !p.life) return;
-      const cost = p.fee + (t === "Equity" ? 0.0015 : t === "Fixed income" ? -0.0004 : 0.0002);
-      rows.push({
-        prov: p.name,
-        name: `${p.name.split(" ")[0]} ${t}${t === "Life Path" ? " 2050" : ""}`,
-        type: t,
-        r1: (p.r1 + dr * 0.6).toFixed(1) + "%",
-        r3: (p.r3 + dr * 0.45).toFixed(1) + "%",
-        r5: (p.r5 + dr * 0.4).toFixed(1) + "%",
-        vol: (p.vol + dv * 0.35).toFixed(1) + "%",
-        dd: (p.dd - dv * 0.45).toFixed(1) + "%",
-        cost: feeLabel(cost),
-        cons: CONS[(i + j) % CONS.length],
-      });
-    });
-  });
-  return rows;
-}
+export const POLICY_TYPES = ["All", "Provident fund", "Balanced", "Equity", "Fixed income", "Life Path"] as const;
 
 export const METER = [
   { k: "Performance", score: 90, w: 25, note: "3.8% net, around the selected peer range" },
@@ -391,25 +354,6 @@ export const AGENTS = [
   ["Transition Agent", "Provider switching"],
   ["Independent Challenger", "Tests assumptions"],
 ] as const;
-
-export const MISSIONS = [
-  { id: "analyze", label: "Analyze My Current EPF", screen: "bench" as ScreenId },
-  { id: "gap", label: "Calculate My EPF Value Gap", screen: "gap" as ScreenId },
-  { id: "bench", label: "Benchmark My Fund", screen: "bench" as ScreenId },
-  { id: "fee", label: "Find Fee Savings", screen: "gap" as ScreenId },
-  { id: "funds", label: "Find Better Comparable Funds", screen: "compare" as ScreenId },
-  { id: "test", label: "Test the Market", screen: "market" as ScreenId },
-  { id: "neg", label: "Negotiate My Provider", screen: "market" as ScreenId },
-  { id: "meet", label: "Prepare EPF Committee Meeting", screen: "committee" as ScreenId },
-  { id: "tender", label: "Run an EPF Tender", screen: "tender" as ScreenId },
-  { id: "proposals", label: "Compare Provider Proposals", screen: "tender" as ScreenId },
-  { id: "design", label: "Redesign Our EPF", screen: "designer" as ScreenId },
-  { id: "outcome", label: "Improve Employee Retirement Outcome", screen: "employees" as ScreenId },
-  { id: "risk", label: "Analyze Workforce Retirement Risk", screen: "workforce" as ScreenId },
-  { id: "switch", label: "Plan Provider Switching", screen: "switching" as ScreenId },
-  { id: "watch", label: "Monitor My EPF", screen: "watch" as ScreenId },
-  { id: "report", label: "Prepare Management Report", screen: "reports" as ScreenId },
-];
 
 export function answerFor(q: string): { agent: string; a: string; screen: ScreenId; cta: string } {
   const l = q.toLowerCase();

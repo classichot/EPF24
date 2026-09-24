@@ -17,7 +17,7 @@ const DOCS: Doc[] = [
 
 export function EpfApp() {
   const [screen, setScreen] = useState<ScreenId>("home");
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
   const [sideW, setSideW] = useState(248);
   const [collapsed, setCollapsed] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -54,13 +54,13 @@ export function EpfApp() {
       const raw = JSON.parse(localStorage.getItem("epf24-ui") || "null");
       if (raw?.w) setSideW(raw.w);
       if (typeof raw?.c === "boolean") setCollapsed(raw.c);
-      if (raw?.theme === "dark" || raw?.theme === "light") setTheme(raw.theme);
+      if (raw?.skin === "console" && (raw.theme === "dark" || raw.theme === "light")) setTheme(raw.theme);
       if (typeof raw?.agi === "boolean") setAgiOn(raw.agi);
     } catch { /* ignore */ }
   }, []);
 
   useEffect(() => {
-    try { localStorage.setItem("epf24-ui", JSON.stringify({ w: sideW, c: collapsed, theme, agi: agiOn })); } catch { /* ignore */ }
+    try { localStorage.setItem("epf24-ui", JSON.stringify({ w: sideW, c: collapsed, theme, agi: agiOn, skin: "console" })); } catch { /* ignore */ }
   }, [sideW, collapsed, theme, agiOn]);
 
   useEffect(() => {
@@ -184,8 +184,8 @@ export function EpfApp() {
           )}
           <button className="icon-btn" type="button" title={collapsed ? "Expand menu" : "Collapse menu"} onClick={() => setCollapsed((c) => !c)}>{collapsed ? "»" : "«"}</button>
         </div>
-        {!collapsed && <div className="nav-group" style={{ paddingBottom: 0 }}>Super intelligence</div>}
-        <div className={collapsed ? "agi-toggle slim" : "agi-toggle"} title="Show or hide super intelligence">
+        {!collapsed && <div className="nav-group" style={{ paddingBottom: 0 }}>AGI mode</div>}
+        <div className={collapsed ? "agi-toggle slim" : "agi-toggle"} title="Turn AGI mode on or off">
           {collapsed ? (
             <button type="button" className={agiOn ? "on" : ""} onClick={toggleAgi}>AGI</button>
           ) : (
@@ -209,7 +209,7 @@ export function EpfApp() {
                     {!collapsed && <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
                   </button>
                 ))}
-                {superItems.length > 0 && !collapsed && <div className="nav-sub">Super intelligence</div>}
+                {superItems.length > 0 && !collapsed && <div className="nav-sub">AGI mode</div>}
                 {superItems.map((item, i) => (
                   <button key={item.id} className={screen === item.id ? "nav-btn on" : "nav-btn"} title={item.label} type="button" onClick={() => goto(item.id)}>
                     <span>{String(plain.length + i + 1).padStart(2, "0")}</span>
