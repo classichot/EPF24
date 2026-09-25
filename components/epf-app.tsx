@@ -3,6 +3,7 @@
 import { useEffect, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { agiSteps } from "@/lib/moat";
 import { AGI_SCREENS, COMPANY, DEFAULT_WEIGHTS, NAV, NAV_GROUPS, baht, type Audience, type ScreenId } from "@/lib/model";
+import { WorkspaceContext } from "@/components/page-head";
 import { Views, type Api, type Design, type Doc, type Emp } from "@/components/views";
 
 const DOCS: Doc[] = [
@@ -183,6 +184,7 @@ export function EpfApp() {
   const width = collapsed ? 64 : sideW;
 
   return (
+    <WorkspaceContext.Provider value={{ audience, goto }}>
     <div className="frame" data-theme={theme} style={{ gridTemplateColumns: `${width}px minmax(0,1fr)`, userSelect: dragging ? "none" : "auto" }}>
       <aside className="side">
         <div className="side-brand">
@@ -257,5 +259,6 @@ export function EpfApp() {
         </div>
       </div>
     </div>
+    </WorkspaceContext.Provider>
   );
 }
