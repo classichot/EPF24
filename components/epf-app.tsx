@@ -221,10 +221,10 @@ export function EpfApp() {
       <div className="main">
         <header className="topbar">
           <div className="top-actions">
-            <div className="agi-toggle" title="Turn AGI mode on or off">
-              <button type="button" className={agiOn ? "" : "on"} onClick={() => { if (agiOn) toggleAgi(); }}>Off</button>
-              <button type="button" className={agiOn ? "on" : ""} onClick={() => { if (!agiOn) toggleAgi(); }}>On</button>
-            </div>
+            <button type="button" className={agiOn ? "ios-switch on" : "ios-switch"} role="switch" aria-checked={agiOn} aria-label={agiOn ? "AGI on" : "AGI off"} title={agiOn ? "AGI on" : "AGI off"} onClick={toggleAgi}>
+              <span>AGI</span>
+              <span className="ios-switch-track" aria-hidden="true"><span className="ios-switch-knob" /></span>
+            </button>
             <button className="theme-btn" type="button" title={theme === "dark" ? "Light mode" : "Dark mode"} aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"} onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}>{theme === "dark" ? "☀" : "☾"}</button>
             <div className="who"><b>K. Suda Wongsa</b><span>HR Director · Committee Secretary</span></div>
           </div>
