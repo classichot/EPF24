@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
+import { PageHead as Head } from "@/components/page-head";
 import { COMPANY, PROVIDERS, baht, feeLabel, wealthDifference, type ScreenId } from "@/lib/model";
 import {
   DEFENSE,
@@ -19,19 +20,6 @@ import {
   twinRun,
   type TwinId,
 } from "@/lib/moat";
-
-function Head({ k, title, lede, children }: { k: string; title: string; lede?: string; children?: ReactNode }) {
-  return (
-    <div className="page-head">
-      <div>
-        <div className="kicker">{k}</div>
-        <h1 style={{ margin: "8px 0 6px" }}>{title}</h1>
-        {lede ? <p className="lede">{lede}</p> : null}
-      </div>
-      {children ? <div className="actions">{children}</div> : null}
-    </div>
-  );
-}
 
 function Trust({ items }: { items: string[] }) {
   return (

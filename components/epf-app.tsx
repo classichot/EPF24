@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { agiSteps } from "@/lib/moat";
-import { AGI_SCREENS, COMPANY, DEFAULT_WEIGHTS, NAV, NAV_GROUPS, baht, type ScreenId } from "@/lib/model";
+import { AGI_SCREENS, COMPANY, DEFAULT_WEIGHTS, NAV, NAV_GROUPS, baht, type Audience, type ScreenId } from "@/lib/model";
 import { Views, type Api, type Design, type Doc, type Emp } from "@/components/views";
 
 const DOCS: Doc[] = [
@@ -44,6 +44,7 @@ export function EpfApp() {
   const [mStep, setMStep] = useState(-1);
   const [agi, setAgi] = useState<Api["agi"]>("team");
   const [agiOn, setAgiOn] = useState(false);
+  const [audience, setAudienceState] = useState<Audience>("corporate");
   const [docs, setDocs] = useState<Doc[]>(DOCS);
   const [reports, setReports] = useState<number[]>([]);
   const [ready, setReady] = useState(false);
@@ -56,6 +57,7 @@ export function EpfApp() {
       if (typeof raw?.c === "boolean") setCollapsed(raw.c);
       if (raw?.skin === "console" && (raw.theme === "dark" || raw.theme === "light")) setTheme(raw.theme);
       if (typeof raw?.agi === "boolean") setAgiOn(raw.agi);
+      if (raw?.audience === "advisor" || raw?.audience === "corporate") setAudienceState(raw.audience);
       if (raw?.closed && typeof raw.closed === "object") setClosed(raw.closed);
     } catch { /* ignore */ }
     setReady(true);
@@ -63,8 +65,8 @@ export function EpfApp() {
 
   useEffect(() => {
     if (!ready) return;
-    try { localStorage.setItem("epf24-ui", JSON.stringify({ w: sideW, c: collapsed, theme, agi: agiOn, skin: "console", closed })); } catch { /* ignore */ }
-  }, [ready, sideW, collapsed, theme, agiOn, closed]);
+    try { localStorage.setItem("epf24-ui", JSON.stringify({ w: sideW, c: collapsed, theme, agi: agiOn, audience, skin: "console", closed })); } catch { /* ignore */ }
+  }, [ready, sideW, collapsed, theme, agiOn, audience, closed]);
 
   useEffect(() => {
     if (bench !== 1) return;
@@ -97,6 +99,12 @@ export function EpfApp() {
     const next = !agiOn;
     setAgiOn(next);
     if (!next && AGI_SCREENS.has(screen)) setScreen("home");
+  }
+
+  function setAudience(next: Audience) {
+    setAudienceState(next);
+    const allowed = NAV.some((item) => item.id === screen && !item.agi && (!item.audience || item.audience === next));
+    if (!AGI_SCREENS.has(screen) && !allowed) setScreen("home");
   }
 
   function toggleGroup(id: string) {
@@ -169,6 +177,7 @@ export function EpfApp() {
     },
     reports,
     genReport: (i) => setReports((r) => (r.includes(i) ? r : [...r, i])),
+    audience,
   };
 
   const width = collapsed ? 64 : sideW;
@@ -180,7 +189,7 @@ export function EpfApp() {
           {!collapsed && (
             <div>
               <div className="brand-mark">EPF24</div>
-              <div className="brand-sub">{agiOn ? "Intelligence and exchange layer" : "Employee Provident Fund Intelligence"}</div>
+              <div className="brand-sub">{agiOn ? "Intelligence and exchange layer" : audience === "advisor" ? "Advisor workspace" : "Employee Provident Fund Intelligence"}</div>
             </div>
           )}
           <button className="icon-btn" type="button" title={collapsed ? "Expand menu" : "Collapse menu"} onClick={() => setCollapsed((c) => !c)}>{collapsed ? "»" : "«"}</button>
@@ -188,7 +197,7 @@ export function EpfApp() {
         <nav>
           {(agiOn
             ? [{ id: "agi", label: "AGI mode", items: NAV.filter((item) => item.agi) }]
-            : NAV_GROUPS.map((group) => ({ id: group.id, label: group.label, items: NAV.filter((item) => item.group === group.id && !item.agi) }))
+            : NAV_GROUPS.map((group) => ({ id: group.id, label: group.label, items: NAV.filter((item) => item.group === group.id && !item.agi && (!item.audience || item.audience === audience)) })).filter((group) => group.items.length > 0)
           ).map((group) => {
             const shut = !collapsed && !!closed[group.id];
             return (
@@ -211,9 +220,19 @@ export function EpfApp() {
         </nav>
         {!collapsed && (
           <div className="side-foot">
-            <b>{COMPANY.name}</b>
-            <div style={{ opacity: 0.85 }}>{COMPANY.members.toLocaleString("en-US")} members · {baht(COMPANY.aum)} assets</div>
-            <div style={{ opacity: 0.85 }}>Provider: {COMPANY.provider}</div>
+            {audience === "advisor" ? (
+              <>
+                <b>Advisor book</b>
+                <div style={{ opacity: 0.85 }}>Open mandate · {COMPANY.name}</div>
+                <div style={{ opacity: 0.85 }}>{COMPANY.members.toLocaleString("en-US")} members · {baht(COMPANY.aum)} assets</div>
+              </>
+            ) : (
+              <>
+                <b>{COMPANY.name}</b>
+                <div style={{ opacity: 0.85 }}>{COMPANY.members.toLocaleString("en-US")} members · {baht(COMPANY.aum)} assets</div>
+                <div style={{ opacity: 0.85 }}>Provider: {COMPANY.provider}</div>
+              </>
+            )}
           </div>
         )}
         <div className={dragging ? "side-handle on" : "side-handle"} title="Drag to resize · double-click to reset" onMouseDown={startDrag} onDoubleClick={() => { setSideW(248); setCollapsed(false); }} />
@@ -221,12 +240,16 @@ export function EpfApp() {
       <div className="main">
         <header className="topbar">
           <div className="top-actions">
+            <div className="mode-switch" role="group" aria-label="Advisor or corporate">
+              <button type="button" className={audience === "advisor" ? "on" : ""} onClick={() => setAudience("advisor")}>Advisor</button>
+              <button type="button" className={audience === "corporate" ? "on" : ""} onClick={() => setAudience("corporate")}>Corporate</button>
+            </div>
             <button type="button" className={agiOn ? "ios-switch on" : "ios-switch"} role="switch" aria-checked={agiOn} aria-label={agiOn ? "AGI on" : "AGI off"} title={agiOn ? "AGI on" : "AGI off"} onClick={toggleAgi}>
               <span>AGI</span>
               <span className="ios-switch-track" aria-hidden="true"><span className="ios-switch-knob" /></span>
             </button>
             <button className="theme-btn" type="button" title={theme === "dark" ? "Light mode" : "Dark mode"} aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"} onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}>{theme === "dark" ? "☀" : "☾"}</button>
-            <div className="who"><b>K. Suda Wongsa</b><span>HR Director · Committee Secretary</span></div>
+            <div className="who">{audience === "advisor" ? <><b>Advisor desk</b><span>Open file · {COMPANY.name}</span></> : <><b>K. Suda Wongsa</b><span>HR Director · Committee Secretary</span></>}</div>
           </div>
         </header>
         <div className="content">

@@ -1,21 +1,9 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
+import { PageHead as Head } from "@/components/page-head";
 import { COMPANY, baht, feeLabel, meterScore, type ScreenId } from "@/lib/model";
 import { FEE_LINES, feeScenario, feeTotal, projectFees, savingsMeter, trueCost } from "@/lib/fee";
-
-function Head({ k, title, lede, children }: { k: string; title: string; lede?: string; children?: ReactNode }) {
-  return (
-    <div className="page-head">
-      <div>
-        <div className="kicker">{k}</div>
-        <h1 style={{ margin: "8px 0 6px" }}>{title}</h1>
-        {lede ? <p className="lede">{lede}</p> : null}
-      </div>
-      {children ? <div className="actions">{children}</div> : null}
-    </div>
-  );
-}
 
 export function FeeScreens({ s, goto }: { s: ScreenId; goto: (id: ScreenId) => void }) {
   if (s === "mypvd") return <MyPvd goto={goto} />;

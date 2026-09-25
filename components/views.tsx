@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import { FeeScreens } from "@/components/fee-views";
+import { PageHead as Head } from "@/components/page-head";
 import { NetworkScreen } from "@/components/network-view";
 import { MoatScreens } from "@/components/moat-views";
 import { PVD_EMPLOYERS, PVD_MANAGERS, PVD_PRODUCTS } from "@/lib/pvd-funds";
@@ -85,6 +86,7 @@ export type Api = {
   addDoc: () => void;
   reports: number[];
   genReport: (i: number) => void;
+  audience: "advisor" | "corporate";
 };
 
 export type Emp = {
@@ -105,19 +107,6 @@ export type Design = {
 };
 
 export type Doc = { n: string; t: string; src: string; f: string; s: string; d: string };
-
-function Head({ k, title, lede, children }: { k: string; title: string; lede?: string; children?: ReactNode }) {
-  return (
-    <div className="page-head">
-      <div>
-        <div className="kicker">{k}</div>
-        <h1 style={{ margin: "8px 0 6px" }}>{title}</h1>
-        {lede ? <p className="lede">{lede}</p> : null}
-      </div>
-      {children ? <div className="actions">{children}</div> : null}
-    </div>
-  );
-}
 
 function Trust({ items }: { items: string[] }) {
   return (
@@ -215,7 +204,7 @@ function Home({ api }: { api: Api }) {
   ];
   return (
     <>
-      <Head k="EPF24 AI · 23 Sep 2026" title="We continuously test whether your provident fund is still competitive.">
+      <Head k={api.audience === "advisor" ? "Advisor · open mandate" : "Corporate · 23 Sep 2026"} title={api.audience === "advisor" ? "We continuously test whether this client’s provident fund is still competitive." : "We continuously test whether your provident fund is still competitive."}>
         <button className="btn btn-secondary" onClick={() => api.goto("twin")}>Simulate</button>
         <button className="btn btn-primary" onClick={() => api.goto("market")}>Run market test →</button>
       </Head>

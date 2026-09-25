@@ -34,23 +34,25 @@ export type ScreenId =
   | "lab"
   | "gateway";
 
-export const NAV: { id: ScreenId; label: string; group: "board" | "intel" | "ops"; agi?: boolean }[] = [
+export type Audience = "advisor" | "corporate";
+
+export const NAV: { id: ScreenId; label: string; group: "board" | "intel" | "ops"; agi?: boolean; audience?: Audience }[] = [
   { id: "home", label: "Dashboard", group: "board" },
-  { id: "mypvd", label: "My PVD", group: "board" },
-  { id: "xray", label: "Fee X-Ray", group: "board" },
+  { id: "mypvd", label: "My PVD", group: "board", audience: "corporate" },
+  { id: "xray", label: "Fee X-Ray", group: "board", audience: "corporate" },
   { id: "gap", label: "Value Gap", group: "board" },
   { id: "bench", label: "Benchmark", group: "board" },
-  { id: "watch", label: "EPF Watch", group: "board" },
-  { id: "committee", label: "Committee AI", group: "board" },
+  { id: "watch", label: "EPF Watch", group: "board", audience: "corporate" },
+  { id: "committee", label: "Committee AI", group: "board", audience: "corporate" },
   { id: "reports", label: "Reports", group: "board" },
   { id: "mission", label: "AGI Mission", group: "board", agi: true },
   { id: "cio", label: "Autonomous CIO", group: "board", agi: true },
-  { id: "intel", label: "PVD Market", group: "intel" },
-  { id: "network", label: "Intelligence network", group: "intel" },
-  { id: "employers", label: "Employers", group: "intel" },
-  { id: "compare", label: "Provider comparison", group: "intel" },
-  { id: "employees", label: "Employee wealth", group: "intel" },
-  { id: "workforce", label: "Retirement Intelligence", group: "intel" },
+  { id: "intel", label: "PVD Market", group: "intel", audience: "advisor" },
+  { id: "network", label: "Intelligence network", group: "intel", audience: "advisor" },
+  { id: "employers", label: "Employers", group: "intel", audience: "advisor" },
+  { id: "compare", label: "Provider comparison", group: "intel", audience: "advisor" },
+  { id: "employees", label: "Employee wealth", group: "intel", audience: "corporate" },
+  { id: "workforce", label: "Retirement Intelligence", group: "intel", audience: "corporate" },
   { id: "brain", label: "Market Brain", group: "intel", agi: true },
   { id: "shadow", label: "Shadow Market", group: "intel", agi: true },
   { id: "fair", label: "Fair Price", group: "intel", agi: true },
@@ -63,11 +65,11 @@ export const NAV: { id: ScreenId; label: string; group: "board" | "intel" | "ops
   { id: "lab", label: "Scenario lab", group: "ops" },
   { id: "market", label: "Market Test", group: "ops" },
   { id: "tender", label: "RFP / Tender", group: "ops" },
-  { id: "marketplace", label: "Marketplace", group: "ops" },
-  { id: "designer", label: "EPF Designer", group: "ops" },
-  { id: "switching", label: "Switching", group: "ops" },
-  { id: "docs", label: "Documents", group: "ops" },
-  { id: "gateway", label: "Public data", group: "ops" },
+  { id: "marketplace", label: "Marketplace", group: "ops", audience: "advisor" },
+  { id: "designer", label: "EPF Designer", group: "ops", audience: "corporate" },
+  { id: "switching", label: "Switching", group: "ops", audience: "corporate" },
+  { id: "docs", label: "Documents", group: "ops", audience: "corporate" },
+  { id: "gateway", label: "Public data", group: "ops", audience: "advisor" },
   { id: "settings", label: "Admin", group: "ops" },
 ];
 

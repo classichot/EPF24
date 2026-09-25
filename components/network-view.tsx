@@ -1,22 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { PageHead as Head } from "@/components/page-head";
 import { COMPANY, baht, feeLabel, type ScreenId } from "@/lib/model";
 import { fairPriceQuote } from "@/lib/moat";
 import { NETWORK_LAYERS, SEC_CATALOG, epfScores, sampleFundIntelligence } from "@/lib/network";
 import { DATA_TIERS, PIPELINE, SEC_PVD_DATASETS } from "@/lib/sec-pvd";
-
-function Head({ k, title, lede }: { k: string; title: string; lede: string }) {
-  return (
-    <div className="page-head">
-      <div>
-        <div className="kicker">{k}</div>
-        <h1 style={{ margin: "8px 0 6px" }}>{title}</h1>
-        <p className="lede">{lede}</p>
-      </div>
-    </div>
-  );
-}
 
 export function NetworkScreen({ goto }: { goto: (id: ScreenId) => void }) {
   const intel = sampleFundIntelligence();
