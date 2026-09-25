@@ -25,9 +25,9 @@
   --color-accent-700: #7dcc9d;
   --color-accent-800: #b7e6cb;
   --color-accent-900: #e5f7ed;
-  --color-sidebar: var(--color-accent);
+  --color-sidebar: #0e4f3c;
   --color-on-accent: #f4faf6;
-  --color-accent-deep: color-mix(in srgb, #000 32%, var(--color-accent));
+  --color-accent-deep: color-mix(in srgb, #000 28%, var(--color-sidebar));
   --font-heading: "Archivo", system-ui, sans-serif;
   --font-body: "Archivo", system-ui, sans-serif;
   --space-1: 4px;
@@ -69,9 +69,9 @@
   --color-accent-700: #1a6642;
   --color-accent-800: #134d32;
   --color-accent-900: #0d3523;
-  --color-sidebar: var(--color-accent);
+  --color-sidebar: #0e4f3c;
   --color-on-accent: #f4faf6;
-  --color-accent-deep: color-mix(in srgb, #000 32%, var(--color-accent));
+  --color-accent-deep: color-mix(in srgb, #000 28%, var(--color-sidebar));
 }
 
 *,
@@ -262,7 +262,7 @@ input[type="range"] { accent-color: var(--color-accent); width: 100%; }
 }
 .nav-btn span:first-child { font-size: 11px; opacity: 0.75; }
 .nav-btn.on {
-  background: color-mix(in srgb, #000 24%, var(--color-accent));
+  background: var(--color-accent);
   border-left-color: var(--color-on-accent);
   font-weight: 800;
   color: var(--color-on-accent);
