@@ -32,11 +32,13 @@ export type ScreenId =
   | "mypvd"
   | "xray"
   | "lab"
-  | "gateway";
+  | "gateway"
+  | "start";
 
 export type Audience = "advisor" | "corporate";
 
 export const NAV: { id: ScreenId; label: string; group: "board" | "intel" | "ops"; agi?: boolean; audience?: Audience }[] = [
+  { id: "start", label: "Easy Start", group: "board" },
   { id: "home", label: "Dashboard", group: "board" },
   { id: "mypvd", label: "My EPF", group: "board", audience: "corporate" },
   { id: "xray", label: "Fee X-Ray", group: "board", audience: "corporate" },

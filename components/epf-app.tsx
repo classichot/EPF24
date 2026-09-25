@@ -17,7 +17,7 @@ const DOCS: Doc[] = [
 ];
 
 export function EpfApp() {
-  const [screen, setScreen] = useState<ScreenId>("home");
+  const [screen, setScreen] = useState<ScreenId>("start");
   const [theme, setTheme] = useState<"light" | "dark">("dark");
   const [sideW, setSideW] = useState(248);
   const [collapsed, setCollapsed] = useState(false);

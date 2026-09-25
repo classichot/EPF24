@@ -943,6 +943,37 @@ const GUIDES: { title: string; guide: Guide }[] = [
 ];
 
 export function pageGuide(title: string): Guide {
+  if (title.startsWith("What would you like to improve")) {
+    return g({
+      code: "00",
+      name: "Easy Start",
+      summary: "Turn a plain-language goal into one plan, then follow the menus or run the same plan as AGI missions.",
+      when: "Use Easy Start when you do not know which menu or mission to open.",
+      need: "A sentence about the fund. Missing documents do not block the plan. They are labeled.",
+      leave: "A checklist or an AGI preview. Estimated opportunity, a contracted reduction, and a verified saving stay separate. Nothing is sent.",
+      features: [
+        { title: "The request", body: "One box. The example is high fees and unhappy returns." },
+        { title: "Role", body: "HR, the committee, or a member. A member does not see the employer invoice." },
+        { title: "One plan", body: "Guide me and Run with AGI read the same steps. Switching mode does not start again." },
+        { title: "First 12 missions", body: "Suggestions use catalog ids already marked for the first release. Anything else is a custom task for review." },
+        { title: "Gates", body: "Invitations, binding negotiation, fund changes, contribution changes and transfers wait for a named person." },
+        { title: "Insufficient evidence", body: "A valid result. Real funds are not ranked from a missing SEC series, and a fee is not counted twice." },
+      ],
+      before: "Say who you are and what you want changed. The open file is the Rattana sample until a live contract replaces it.",
+      steps: [
+        { title: "Write the goal", body: "Ordinary language is enough. Use the example if you want the fee-and-return path." },
+        { title: "Build the plan", body: "Read the missing facts before the baht figures." },
+        { title: "Choose Guide me or Run with AGI", body: "The steps stay the same." },
+        { title: "Stop at approval or at insufficient evidence", body: "A draft is not a letter. A past return is not a future gain." },
+      ],
+      outcome: "A saved plan the user can leave and reopen, with estimated, contracted and verified results still distinct.",
+      related: [
+        { id: "home", label: "Dashboard" },
+        { id: "xray", label: "Fee X-Ray" },
+        { id: "mission", label: "AGI Mission" },
+      ],
+    });
+  }
   const found = GUIDES.find((row) => row.title === title);
   if (found) return found.guide;
   if (title.includes("provident fund is still competitive")) return HOME;
