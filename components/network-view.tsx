@@ -5,7 +5,7 @@ import { PageHead as Head } from "@/components/page-head";
 import { COMPANY, baht, feeLabel, type ScreenId } from "@/lib/model";
 import { fairPriceQuote } from "@/lib/moat";
 import { NETWORK_LAYERS, SEC_CATALOG, epfScores, sampleFundIntelligence } from "@/lib/network";
-import { DATA_TIERS, PIPELINE, SEC_PVD_DATASETS } from "@/lib/sec-pvd";
+import { CANONICAL_CHAIN, DATA_TIERS, PIPELINE, RAW_STORE, SEC_PVD_DATASETS } from "@/lib/sec-pvd";
 
 export function NetworkScreen({ goto }: { goto: (id: ScreenId) => void }) {
   const intel = sampleFundIntelligence();
@@ -13,10 +13,14 @@ export function NetworkScreen({ goto }: { goto: (id: ScreenId) => void }) {
   const fair = fairPriceQuote(COMPANY.aum);
   const fund = intel.fund;
   const [connector, setConnector] = useState("Checking the SEC connector…");
+  const [snapshots, setSnapshots] = useState(0);
   useEffect(() => {
     fetch("/api/sec/status")
       .then((response) => response.json())
-      .then((body: { message?: string }) => setConnector(body.message || "Connector is ready."))
+      .then((body: { message?: string; snapshots?: number }) => {
+        setConnector(body.message || "Connector is ready.");
+        setSnapshots(body.snapshots ?? 0);
+      })
       .catch(() => setConnector("Connector is ready. The subscription key is not set."));
   }, []);
   return (
@@ -28,7 +32,15 @@ export function NetworkScreen({ goto }: { goto: (id: ScreenId) => void }) {
       />
       <div className="surface">
         <h6 style={{ marginTop: 0 }}>SEC connector</h6>
-        <p style={{ margin: 0 }}>{connector} Rate limit on the older portal: 3,000 calls per 300 seconds, which is why the sync is cached. Dataset paths are taken from the current portal, not the retired Developer Portal URL.</p>
+        <p style={{ margin: 0 }}>{connector} Raw responses go into {RAW_STORE} and are kept by effective date and retrieval time. This store has {snapshots} snapshot{snapshots === 1 ? "" : "s"}. Nothing is overwritten. The older portal’s limit was 3,000 calls per 300 seconds, so the worker syncs and the page does not.</p>
+      </div>
+      <h6>Canonical model</h6>
+      <div className="rule">
+        {CANONICAL_CHAIN.map((step, i) => (
+          <div key={step} style={{ display: "grid", gridTemplateColumns: "28px 1fr", gap: 8, padding: "8px 0", borderBottom: "1px solid var(--color-divider)" }}>
+            <b>{String(i + 1).padStart(2, "0")}</b><span>{step}</span>
+          </div>
+        ))}
       </div>
       <h6>Pipeline</h6>
       <div className="rule">
@@ -109,6 +121,19 @@ export function NetworkScreen({ goto }: { goto: (id: ScreenId) => void }) {
       <div className="ink">
         <span className="eyebrow">EPF24 analysis · not an SEC sentence</span>
         <span>{intel.analysis} For {COMPANY.name}, the negotiated cost is {baht(COMPANY.annualCost)} a year against a best-fit cost of {baht(COMPANY.altCost)}. The fee difference is {baht(COMPANY.feeSaving)} a year. The 10-year member wealth difference on the stated return assumptions is {baht(intel.ten)}. SEC factsheets are not loaded, so this is not an SEC comparison.</span>
+      </div>
+      <h6>Savings and return opportunity · {COMPANY.name}</h6>
+      <p className="muted">{COMPANY.members.toLocaleString("en-US")} employees · {baht(COMPANY.aum)} assets · current provider {COMPANY.provider}. SEC historical returns and published fees are not loaded. The lines below are the sample file and EPF24 calculations.</p>
+      <div className="stats">
+        <div className="stat"><span className="muted">Current annual fund cost</span><b>{baht(COMPANY.annualCost)}</b><span className="muted">Corporate private data · negotiated contract</span></div>
+        <div className="stat"><span className="muted">Comparable lower-cost option</span><b>{baht(COMPANY.altCost)}</b><span className="muted">EPF24 calculation · sample book, not an SEC fee</span></div>
+        <div className="stat"><span className="muted">Potential cost difference</span><b>{baht(COMPANY.feeSaving)}/year</b><span className="muted">EPF24 calculation</span></div>
+        <div className="stat"><span className="muted">Current vs comparable 5Y</span><b>{(COMPANY.netReturn * 100).toFixed(1)}% → {(COMPANY.altReturn * 100).toFixed(1)}%</b><span className="muted">Sample-book assumptions · SEC series not loaded</span></div>
+        <div className="stat"><span className="muted">10-year member wealth difference</span><b>{baht(intel.ten)}</b><span className="muted">EPF24 calculation on those return assumptions</span></div>
+      </div>
+      <div className="ink">
+        <span className="eyebrow">Opportunity · not an SEC sentence</span>
+        <span>EPF24 detected an estimated {baht(COMPANY.annualValue)} annual economic improvement on the sample book: {baht(COMPANY.feeSaving)} of employer fee difference and {baht(COMPANY.investOpp)} of member wealth scenario. SEC support is not loaded. The drivers are the fee gap and the stated return gap. The alternative is the best-fit sample provider, not the cheapest. The risk is that a negotiated fee and a published fee are different. The mission is to test or reprice, or to record that the current arrangement stays.</span>
       </div>
       <h6>Fair Fee · {COMPANY.name}</h6>
       <div className="stats">

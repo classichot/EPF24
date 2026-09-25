@@ -87,6 +87,10 @@ export function epfScores(id = COMPANY.providerId) {
     { metric: "Fee score", value: String(clampScore(50 + (sample.peerFee - sample.fund.fee) * 10000)), source: "EPF24 calculation · sample book" },
     { metric: "Risk score", value: String(clampScore(50 + (peerVol - sample.fund.vol) * 8)), source: "EPF24 calculation · sample book" },
     { metric: "Peer percentile", value: `${rank} of ${PROVIDERS.length} on 5Y return`, source: "EPF24 calculation · sample book" },
+    { metric: "Risk-adjusted return", value: sample.ownSharpe.toFixed(2), source: "EPF24 calculation · sample book · cash rate 2%" },
+    { metric: "Drawdown", value: `${sample.fund.dd.toFixed(1)}%`, source: "EPF24 calculation · sample book" },
+    { metric: "Volatility", value: `${sample.fund.vol.toFixed(1)}%`, source: "EPF24 calculation · sample book" },
+    { metric: "Consistency", value: "—", source: "Needs a benchmark series" },
     { metric: "Concentration", value: "—", source: "Needs SEC dataset 11" },
     { metric: "Foreign exposure", value: "—", source: "Needs SEC dataset 12" },
   ];

@@ -45,9 +45,13 @@ export const PIPELINE = [
 
 export const DATA_TIERS = [
   { k: "SEC Open Data", v: "Official managers, funds, policies, published returns, published fees, holdings and monthly NAV. Free for commercial and personal use. Pooled and master pooled factsheets, not every bespoke employer fund." },
-  { k: "Public disclosures", v: "AMC factsheets, sites and reports, only where reuse is allowed. Kept apart from the SEC file so a published fee is never treated as the negotiated fee." },
+  { k: "EPF24 open-source intelligence", v: "AMC factsheets, sites and reports, only where reuse is allowed. Kept apart from the SEC file so a published fee is never treated as the negotiated fee." },
   { k: "Corporate private data", v: "Contract, invoices, headcount, contributions, balances and the policies the employer actually selected. This is what turns the market file into that employer’s digital twin." },
 ];
+
+export const RAW_STORE = "sec_pvd_raw";
+
+export const CANONICAL_CHAIN = ["AMC", "Fund", "Investment policy", "Sub-policy", "NAV", "Return", "Fee", "Holdings", "Benchmark"];
 
 export type CanonicalEntity = "amc" | "fund" | "policy" | "subpolicy" | "nav" | "return" | "fee" | "holding" | "statistic";
 
