@@ -160,15 +160,17 @@ function Lab() {
 
 function Gateway() {
   const rows = [
-    ["ThaiPVD employer register", "Fund names", "Public", "In progress", "thaipvd.com"],
-    ["ThaiPVD management companies", "Who may run a PVD", "Public", "Loaded", "thaipvd.com/Committee/companyList"],
-    ["SEC capital-market tables", "Fund counts, NAV, AUM", "Public", "Not connected", "market.sec.or.th"],
-    ["AMC factsheets", "Policy, fee, performance", "Public", "Not connected", "Each manager"],
-    ["Employer contract", "Negotiated fee", "Private", "Sample file only", "This workspace"],
+    ["SEC Open Data · PVD", "15 datasets: managers, funds, policy, return, published fee, allocation, holdings, monthly NAV", "Public base", "Connector ready · path not pinned", "secopendata.sec.or.th"],
+    ["SEC API portal", "Account, product subscription, subscription key", "Public base", "Not subscribed", "api-portal.sec.or.th"],
+    ["ThaiPVD employer register", "Employer fund names", "Public", "Loaded · separated onto Employers", "thaipvd.com"],
+    ["ThaiPVD management companies", "Who may run a PVD", "Public", "Loaded", "thaipvd.com"],
+    ["SET / ThaiBMA / BOT", "Benchmark series for alpha and capture", "Market", "Not connected", "Index publishers"],
+    ["Employer contract", "Negotiated fee, SLA, invoices", "Private", "Sample file only", "This workspace"],
+    ["Tender quotations", "Quoted fee, negotiated fee, winner", "Moat", "Sample book only", "Market test"],
   ];
   return (
     <>
-      <Head k="Public data gateway" title="Where a number is allowed to come from." lede="Public market data and the employer’s negotiated contract stay in separate stores. A connector is listed here only when it has a source." />
+      <Head k="Public data gateway" title="SEC Open Data is the raw layer." lede="A paid SEC feed is not required to start. The open API is the backbone. Published fees stay in that store. The employer’s negotiated fee and every tender quote stay in a different store." />
       <table className="table">
         <thead><tr><th>Source</th><th>What it can supply</th><th>Lane</th><th>Status</th><th>Reference</th></tr></thead>
         <tbody>
@@ -183,7 +185,7 @@ function Gateway() {
           ))}
         </tbody>
       </table>
-      <p className="muted">Last reviewed 24 Sep 2026. Nothing on this screen is a live SEC feed. If a source is “Not connected”, EPF24 does not invent a retrieval date for it.</p>
+      <p className="muted">Reviewed 25 Sep 2026. SEC Open Data is free for commercial and personal use. This screen still does not pull it. Sync runs only after the current portal base URL, key header and subscription key are set. Pooled and master pooled factsheets do not replace an employer’s negotiated fee.</p>
     </>
   );
 }

@@ -11,6 +11,8 @@ export type ScreenId =
   | "outcome"
   | "exchange"
   | "intel"
+  | "network"
+  | "employers"
   | "compare"
   | "bench"
   | "gap"
@@ -44,6 +46,8 @@ export const NAV: { id: ScreenId; label: string; group: "board" | "intel" | "ops
   { id: "mission", label: "AGI Mission", group: "board", agi: true },
   { id: "cio", label: "Autonomous CIO", group: "board", agi: true },
   { id: "intel", label: "PVD Market", group: "intel" },
+  { id: "network", label: "Intelligence network", group: "intel" },
+  { id: "employers", label: "Employers", group: "intel" },
   { id: "compare", label: "Provider comparison", group: "intel" },
   { id: "employees", label: "Employee wealth", group: "intel" },
   { id: "workforce", label: "Retirement Intelligence", group: "intel" },

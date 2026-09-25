@@ -1,12 +1,7 @@
 import { COMPANY, PROVIDERS, annualCost, baht, feeLabel, projectMember, wealthDifference, workforceAt, type ScreenId } from "@/lib/model";
+import { NETWORK_LAYERS } from "@/lib/network";
 
-export const LAYERS = [
-  { k: "1 · Public intelligence", lock: "Base", v: "SEC, ThaiPVD, AMC factsheets, market data. In 2024, 61.2% of employers offered choice and 6.7% offered Life Path." },
-  { k: "2 · Transaction intelligence", lock: "Private", v: "Quotations, RFP responses, negotiated fees, concessions, rejected offers, winning proposals." },
-  { k: "3 · Provider behavior", lock: "Private", v: "When a provider discounts, where it is strong, and what happens after it wins." },
-  { k: "4 · Employer digital twins", lock: "Private", v: "Workforce, contributions, allocation, fees, performance and retirement projections for each client." },
-  { k: "5 · Outcome intelligence", lock: "Closed loop", v: "Recommendation, decision, actual result, then the model updates." },
-];
+export const LAYERS = NETWORK_LAYERS;
 
 export const FLYWHEEL = [
   "Employer joins",
@@ -119,7 +114,7 @@ export const DEFENSE: { capability: string; level: string }[] = [
   { capability: "Fund comparison", level: "Low" },
   { capability: "RFP generator", level: "Low" },
   { capability: "Retirement calculator", level: "Low" },
-  { capability: "Public fund database", level: "Medium" },
+  { capability: "SEC Open Data", level: "Base, not the moat" },
   { capability: "Employer digital twin", level: "High" },
   { capability: "Proprietary tender history", level: "Very high" },
   { capability: "Fair Price", level: "Very high" },

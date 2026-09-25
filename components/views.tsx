@@ -2,8 +2,9 @@
 
 import { useState, type ReactNode } from "react";
 import { FeeScreens } from "@/components/fee-views";
+import { NetworkScreen } from "@/components/network-view";
 import { MoatScreens } from "@/components/moat-views";
-import { PVD_FUNDS, PVD_MANAGERS } from "@/lib/pvd-funds";
+import { PVD_EMPLOYERS, PVD_MANAGERS, PVD_PRODUCTS } from "@/lib/pvd-funds";
 import { CATALOG_CATEGORIES, CATALOG_MISSIONS, ENTRY_MISSIONS } from "@/lib/catalog";
 import { ENGINES, agiSteps, agiVerdict } from "@/lib/moat";
 import {
@@ -155,6 +156,8 @@ export function Views({ s, api }: { s: ScreenId; api: Api }) {
   if (fee) return fee;
   if (s === "home") return <Home api={api} />;
   if (s === "intel") return <Intel api={api} />;
+  if (s === "network") return <NetworkScreen goto={api.goto} />;
+  if (s === "employers") return <Employers />;
   if (s === "compare") return <Compare api={api} />;
   if (s === "bench") return <Bench api={api} />;
   if (s === "gap") return <Gap api={api} />;
@@ -342,14 +345,14 @@ function Home({ api }: { api: Api }) {
 
 function Intel({ api }: { api: Api }) {
   const q = api.search.trim().toLowerCase();
-  const rows = PVD_FUNDS.filter((fund) => (api.ptype === "All" || fund.type === api.ptype) && fund.name.toLowerCase().includes(q));
+  const rows = PVD_PRODUCTS.filter((fund) => (api.ptype === "All" || fund.type === api.ptype) && `${fund.en} ${fund.name}`.toLowerCase().includes(q));
   return (
     <>
-      <Head k="02 — EPF Intelligence" title="Registered provident funds in Thailand." lede="The mock policy names are gone. This list is the distinct fund names on the ThaiPVD employer register, plus the companies the SEC site lists as providing provident-fund services." />
+      <Head k="02 — EPF Intelligence" title="Provident-fund companies and pooled products." lede="Employer funds are on the Employers list. This screen keeps the companies that provide provident-fund services, and pooled product names from the register." />
       <div className="stats">
         {[
-          [PVD_FUNDS.length.toLocaleString("en-US"), "Distinct fund names"],
           [String(PVD_MANAGERS.length), "PVD management companies"],
+          [PVD_PRODUCTS.length.toLocaleString("en-US"), "Pooled product names"],
           ["23,779", "Employers (public, 2024)"],
           ["61.2%", "Employers offering choice"],
           ["6.7%", "Offering Life Path"],
@@ -362,8 +365,8 @@ function Intel({ api }: { api: Api }) {
         {PVD_MANAGERS.map((company, i) => (
           <article key={company.name} className="mcard">
             <div className="mcard-id">{String(i + 1).padStart(2, "0")}</div>
-            <div className="mcard-title">{company.name}</div>
-            <p>Provident-fund management company. Life Path and RMF flags are the published company-list marks only.</p>
+            <div className="mcard-title">{company.en}</div>
+            <p>Licensed to provide provident-fund services.</p>
             <div className="mcard-meta">
               <span className={`tag ${company.life ? "tag-outline" : "tag-neutral"}`}>{company.life ? "Life Path" : "No Life Path"}</span>
               <span className={`tag ${company.rmf ? "tag-outline" : "tag-neutral"}`}>{company.rmf ? "RMF for PVD" : "No RMF"}</span>
@@ -372,24 +375,53 @@ function Intel({ api }: { api: Api }) {
         ))}
       </div>
       <div className="filters">
-        <input className="input" style={{ maxWidth: 360 }} placeholder="Search a provident fund name" value={api.search} onChange={(e) => api.setSearch(e.target.value)} />
+        <input className="input" style={{ maxWidth: 360 }} placeholder="Search a pooled product" value={api.search} onChange={(e) => api.setSearch(e.target.value)} />
         <Seg options={POLICY_TYPES.map((p) => ({ id: p, label: p }))} value={api.ptype} onChange={api.setPtype} />
-        <span className="muted">{rows.length.toLocaleString("en-US")} names</span>
+        <span className="muted">{rows.length.toLocaleString("en-US")} products</span>
       </div>
+      <h6>Pooled products <span className="muted">{rows.length}</span></h6>
       <div className="scroll">
         <table className="table">
-          <thead><tr><th>Provident fund</th><th>Name signal</th></tr></thead>
+          <thead><tr><th>Product</th><th>Name signal</th></tr></thead>
           <tbody>
             {rows.map((fund) => (
               <tr key={fund.name}>
-                <td style={{ fontWeight: 600 }}>{fund.name}</td>
+                <td style={{ fontWeight: 600 }}>{fund.en}</td>
                 <td><span className="tag tag-neutral">{fund.type}</span></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <Trust items={["Fund names: ThaiPVD employer register, distinct fundName values.", "Management companies and Life Path / RMF flags: thaipvd.com company list.", "Returns and fees are not on that register, so they are not filled in here.", "The Rattana worked example elsewhere is still a scenario."]} />
+      <Trust items={["Employer funds are on Employers, in English.", "Pooled product names are the register nicknames that are not an employer, shown in English.", "Management companies and Life Path / RMF flags come from the public company list.", "Returns and fees are not on that register, so they are not filled in here."]} />
+    </>
+  );
+}
+
+function Employers() {
+  const [q, setQ] = useState("");
+  const query = q.trim().toLowerCase();
+  const rows = PVD_EMPLOYERS.filter((fund) => `${fund.en} ${fund.name}`.toLowerCase().includes(query));
+  return (
+    <>
+      <Head k="Employers" title="Employers with a registered provident fund." lede="Taken off EPF Intelligence. Each name is the English form of an employer fund on the Thai register." />
+      <div className="filters">
+        <input className="input" style={{ maxWidth: 360 }} placeholder="Search an employer" value={q} onChange={(e) => setQ(e.target.value)} />
+        <span className="muted">{rows.length.toLocaleString("en-US")} employers</span>
+      </div>
+      <div className="scroll">
+        <table className="table">
+          <thead><tr><th>Employer</th></tr></thead>
+          <tbody>
+            {rows.map((fund) => (
+              <tr key={fund.name}>
+                <td style={{ fontWeight: 600 }}>{fund.en}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <Trust items={["Source: distinct fund names on the ThaiPVD employer register, displayed in English.", "This list is not the 17 management companies, and it does not include returns or fees."]} />
     </>
   );
 }

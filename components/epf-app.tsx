@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, type FormEvent, type MouseEvent as ReactMouseEvent } from "react";
+import { useEffect, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { agiSteps } from "@/lib/moat";
-import { AGI_SCREENS, COMPANY, DEFAULT_WEIGHTS, NAV, NAV_GROUPS, answerFor, baht, type ScreenId } from "@/lib/model";
+import { AGI_SCREENS, COMPANY, DEFAULT_WEIGHTS, NAV, NAV_GROUPS, baht, type ScreenId } from "@/lib/model";
 import { Views, type Api, type Design, type Doc, type Emp } from "@/components/views";
 
 const DOCS: Doc[] = [
@@ -21,8 +21,6 @@ export function EpfApp() {
   const [sideW, setSideW] = useState(248);
   const [collapsed, setCollapsed] = useState(false);
   const [dragging, setDragging] = useState(false);
-  const [q, setQ] = useState("");
-  const [ai, setAi] = useState<ReturnType<typeof answerFor> & { q: string } | null>(null);
   const [search, setSearch] = useState("");
   const [ptype, setPtype] = useState("All");
   const [sel, setSel] = useState(["cp", "la", "kf"]);
@@ -127,12 +125,6 @@ export function EpfApp() {
     window.addEventListener("mouseup", up);
   }
 
-  function ask(e: FormEvent) {
-    e.preventDefault();
-    const text = q.trim() || "How much value are we losing by staying with our current provident fund?";
-    setAi({ q: text, ...answerFor(text) });
-  }
-
   const api: Api = {
     goto,
     search, setSearch, ptype, setPtype, sel,
@@ -193,17 +185,6 @@ export function EpfApp() {
           )}
           <button className="icon-btn" type="button" title={collapsed ? "Expand menu" : "Collapse menu"} onClick={() => setCollapsed((c) => !c)}>{collapsed ? "»" : "«"}</button>
         </div>
-        {!collapsed && <div className="nav-group" style={{ paddingBottom: 0 }}>AGI mode</div>}
-        <div className={collapsed ? "agi-toggle slim" : "agi-toggle"} title="Turn AGI mode on or off">
-          {collapsed ? (
-            <button type="button" className={agiOn ? "on" : ""} onClick={toggleAgi}>AGI</button>
-          ) : (
-            <>
-              <button type="button" className={agiOn ? "" : "on"} onClick={() => { if (agiOn) toggleAgi(); }}>Off</button>
-              <button type="button" className={agiOn ? "on" : ""} onClick={() => { if (!agiOn) toggleAgi(); }}>On</button>
-            </>
-          )}
-        </div>
         <nav>
           {(agiOn
             ? [{ id: "agi", label: "AGI mode", items: NAV.filter((item) => item.agi) }]
@@ -239,28 +220,15 @@ export function EpfApp() {
       </aside>
       <div className="main">
         <header className="topbar">
-          <form className="ask" onSubmit={ask}>
-            <span className="ask-badge">AI</span>
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Ask EPF24 anything about your provident fund…" />
-            <button className="btn btn-primary" type="submit">Ask →</button>
-          </form>
-          <button className="btn btn-secondary" type="button" onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}>{theme === "dark" ? "☀ Light mode" : "☾ Dark mode"}</button>
-          <div className="who"><b>K. Suda Wongsa</b><span>HR Director · Committee Secretary</span></div>
-        </header>
-        {ai && (
-          <div className="ai-panel">
-            <div style={{ display: "flex", justifyContent: "space-between", gap: 16 }}>
-              <div className="ai-kicker">EPF24 AI · {ai.agent}</div>
-              <button className="btn btn-ghost" type="button" onClick={() => setAi(null)}>Close ×</button>
+          <div className="top-actions">
+            <div className="agi-toggle" title="Turn AGI mode on or off">
+              <button type="button" className={agiOn ? "" : "on"} onClick={() => { if (agiOn) toggleAgi(); }}>Off</button>
+              <button type="button" className={agiOn ? "on" : ""} onClick={() => { if (!agiOn) toggleAgi(); }}>On</button>
             </div>
-            <div className="ai-q">“{ai.q}”</div>
-            <div className="ai-a">{ai.a}</div>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-              <button className="btn btn-secondary" type="button" onClick={() => { goto(ai.screen); if (ai.screen === "market" && /negot/i.test(ai.q + ai.cta)) setShowNeg(true); }}>{ai.cta} →</button>
-              <span className="ai-note">Figures from deterministic engines · narrative by AI · decision support, not a recommendation</span>
-            </div>
+            <button className="theme-btn" type="button" title={theme === "dark" ? "Light mode" : "Dark mode"} aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"} onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}>{theme === "dark" ? "☀" : "☾"}</button>
+            <div className="who"><b>K. Suda Wongsa</b><span>HR Director · Committee Secretary</span></div>
           </div>
-        )}
+        </header>
         <div className="content">
           <Views s={screen} api={api} />
         </div>
