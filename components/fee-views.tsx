@@ -17,7 +17,7 @@ function MyPvd({ goto }: { goto: (id: ScreenId) => void }) {
   const meter = savingsMeter();
   return (
     <>
-      <Head k="My PVD" title="Pay less. Earn more." lede="Two numbers, kept apart. The employer figure is the negotiated fee gap. The employee figure is an investment scenario. They are not added into one guaranteed result.">
+      <Head k="My EPF" title="Pay less. Earn more." lede="Two numbers, kept apart. The employer figure is the negotiated fee gap. The employee figure is an investment scenario. They are not added into one guaranteed result.">
         <button className="btn btn-secondary" type="button" onClick={() => goto("xray")}>Fee X-Ray</button>
         <button className="btn btn-primary" type="button" onClick={() => goto("lab")}>Scenario lab →</button>
       </Head>

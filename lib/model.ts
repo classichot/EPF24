@@ -38,7 +38,7 @@ export type Audience = "advisor" | "corporate";
 
 export const NAV: { id: ScreenId; label: string; group: "board" | "intel" | "ops"; agi?: boolean; audience?: Audience }[] = [
   { id: "home", label: "Dashboard", group: "board" },
-  { id: "mypvd", label: "My PVD", group: "board", audience: "corporate" },
+  { id: "mypvd", label: "My EPF", group: "board", audience: "corporate" },
   { id: "xray", label: "Fee X-Ray", group: "board", audience: "corporate" },
   { id: "gap", label: "Value Gap", group: "board" },
   { id: "bench", label: "Benchmark", group: "board" },

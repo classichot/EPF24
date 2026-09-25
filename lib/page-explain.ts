@@ -52,9 +52,9 @@ const HOME = g({
 const GUIDES: { title: string; guide: Guide }[] = [
   { title: "Pay less. Earn more.", guide: g({
     code: "02",
-    name: "My PVD",
+    name: "My EPF",
     summary: "Show the employer’s negotiated fee gap and the members’ investment scenario as two results, not one promise.",
-    when: "Use My PVD when the employer wants the plain version of the fund: what it costs, and what a different return path would mean for members.",
+    when: "Use My EPF when the employer wants the plain version of the fund: what it costs, and what a different return path would mean for members.",
     need: "The negotiated fee on the open file, assets, and the stated return assumptions. A published factsheet fee is not this page.",
     leave: "Two numbers the employer can repeat: the annual fee difference, and the member wealth scenario, each with its own label.",
     features: [
@@ -88,19 +88,19 @@ const GUIDES: { title: string; guide: Guide }[] = [
       { title: "Negotiated corporate fee", body: "The lines extracted from the employer’s file. The total is the contract, not the market." },
       { title: "Clause reference", body: "Each line stays attached to the clause it came from, so a meeting can point at the document." },
       { title: "Published market lane", body: "What a factsheet might show. It is displayed apart and is not added into the negotiated total." },
-      { title: "Handoff", body: "The reviewed total is what My PVD, Value Gap and the committee pack should use." },
+      { title: "Handoff", body: "The reviewed total is what My EPF, Value Gap and the committee pack should use." },
     ],
     before: "The fee schedule should be marked reviewed in Documents. An extracting file is not ready to quote.",
     steps: [
       { title: "Start from the uploaded schedule", body: "Ignore the factsheet until the contract lines are read." },
       { title: "Check each line against its clause", body: "If a line has no clause, do not treat it as agreed." },
       { title: "Leave the published fee outside the total", body: "Show it as a comparison. Do not blend it into the negotiated cost." },
-      { title: "Carry the total forward", body: "Use this total on My PVD and in the committee pack. Do not retype a different number." },
+      { title: "Carry the total forward", body: "Use this total on My EPF and in the committee pack. Do not retype a different number." },
     ],
     outcome: "A contract fee the committee can defend, with the published fee still visibly separate.",
     related: [
       { id: "docs", label: "Documents" },
-      { id: "mypvd", label: "My PVD" },
+      { id: "mypvd", label: "My EPF" },
       { id: "gap", label: "Value Gap" },
     ],
   }) },
@@ -425,7 +425,7 @@ const GUIDES: { title: string; guide: Guide }[] = [
     outcome: "A known cause for a changed figure, or a return to the baseline.",
     related: [
       { id: "gap", label: "Value Gap" },
-      { id: "mypvd", label: "My PVD" },
+      { id: "mypvd", label: "My EPF" },
       { id: "twin", label: "Digital Twin" },
     ],
   }) },
