@@ -3,6 +3,9 @@
 import { useEffect, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { agiSteps } from "@/lib/moat";
 import { AGI_SCREENS, COMPANY, DEFAULT_WEIGHTS, NAV, NAV_GROUPS, baht, type Audience, type ScreenId } from "@/lib/model";
+import { loadBook, makeCase, saveBook, SEED_CASES, statusLabel, type AdvisorCase, type CaseStatus, type NewCase } from "@/lib/cases";
+import type { OpenBrief } from "@/lib/easy-start";
+import { CaseControl } from "@/components/case-control";
 import { WorkspaceContext } from "@/components/page-head";
 import { Views, type Api, type Design, type Doc, type Emp } from "@/components/views";
 
@@ -46,6 +49,9 @@ export function EpfApp() {
   const [agi, setAgi] = useState<Api["agi"]>("team");
   const [agiOn, setAgiOn] = useState(false);
   const [audience, setAudienceState] = useState<Audience>("corporate");
+  const [cases, setCases] = useState<AdvisorCase[]>(SEED_CASES);
+  const [activeId, setActiveId] = useState("rattana");
+  const [brief, setBrief] = useState<OpenBrief | null>(null);
   const [docs, setDocs] = useState<Doc[]>(DOCS);
   const [reports, setReports] = useState<number[]>([]);
   const [ready, setReady] = useState(false);
@@ -61,6 +67,9 @@ export function EpfApp() {
       if (raw?.audience === "advisor" || raw?.audience === "corporate") setAudienceState(raw.audience);
       if (raw?.closed && typeof raw.closed === "object") setClosed(raw.closed);
     } catch { /* ignore */ }
+    const book = loadBook();
+    setCases(book.cases);
+    setActiveId(book.activeId);
     setReady(true);
   }, []);
 
@@ -68,6 +77,11 @@ export function EpfApp() {
     if (!ready) return;
     try { localStorage.setItem("epf24-ui", JSON.stringify({ w: sideW, c: collapsed, theme, agi: agiOn, audience, skin: "console", closed })); } catch { /* ignore */ }
   }, [ready, sideW, collapsed, theme, agiOn, audience, closed]);
+
+  useEffect(() => {
+    if (!ready) return;
+    saveBook(cases, activeId);
+  }, [ready, cases, activeId]);
 
   useEffect(() => {
     if (bench !== 1) return;
@@ -91,8 +105,15 @@ export function EpfApp() {
   }, [mStep, missionLen]);
 
   function goto(next: ScreenId) {
+    setBrief(null);
     if (AGI_SCREENS.has(next)) setAgiOn(true);
     setScreen(next);
+    window.scrollTo(0, 0);
+  }
+
+  function returnToStart() {
+    setAgiOn(false);
+    setScreen("start");
     window.scrollTo(0, 0);
   }
 
@@ -106,6 +127,23 @@ export function EpfApp() {
     setAudienceState(next);
     const allowed = NAV.some((item) => item.id === screen && !item.agi && (!item.audience || item.audience === next));
     if (!AGI_SCREENS.has(screen) && !allowed) setScreen("home");
+  }
+
+  function removeCase(id: string) {
+    setCases((rows) => rows.filter((item) => item.sample || item.id !== id));
+    if (activeId === id) setActiveId("rattana");
+  }
+
+  function addCase(input: NewCase) {
+    const next = makeCase(input);
+    setCases((rows) => [...rows, next]);
+    setActiveId(next.id);
+  }
+
+  const activeCase = cases.find((item) => item.id === activeId) ?? cases[0];
+
+  function setCaseStatus(id: string, status: CaseStatus) {
+    setCases((rows) => rows.map((item) => (item.id === id ? { ...item, status } : item)));
   }
 
   function toggleGroup(id: string) {
@@ -184,7 +222,7 @@ export function EpfApp() {
   const width = collapsed ? 64 : sideW;
 
   return (
-    <WorkspaceContext.Provider value={{ audience, goto }}>
+    <WorkspaceContext.Provider value={{ audience, goto, caseFile: audience === "advisor" ? activeCase : null, brief, setBrief, returnToStart }}>
     <div className="frame" data-theme={theme} style={{ gridTemplateColumns: `${width}px minmax(0,1fr)`, userSelect: dragging ? "none" : "auto" }}>
       <aside className="side">
         <div className="side-brand">
@@ -222,11 +260,11 @@ export function EpfApp() {
         </nav>
         {!collapsed && (
           <div className="side-foot">
-            {audience === "advisor" ? (
+            {audience === "advisor" && activeCase ? (
               <>
-                <b>Advisor book</b>
-                <div style={{ opacity: 0.85 }}>Open mandate · {COMPANY.name}</div>
-                <div style={{ opacity: 0.85 }}>{COMPANY.members.toLocaleString("en-US")} members · {baht(COMPANY.aum)} assets</div>
+                <b>Advisor workspace</b>
+                <div style={{ opacity: 0.85 }}>{activeCase.employer}</div>
+                <div style={{ opacity: 0.85 }}>{statusLabel(activeCase.status)} · {activeCase.worked ? `${activeCase.members?.toLocaleString("en-US")} members · ${baht(activeCase.aum ?? 0)} assets` : "Insufficient evidence"}</div>
               </>
             ) : (
               <>
@@ -241,6 +279,16 @@ export function EpfApp() {
       </aside>
       <div className="main">
         <header className="topbar">
+          {audience === "advisor" && activeCase ? (
+            <CaseControl
+              cases={cases}
+              active={activeCase}
+              onSelect={setActiveId}
+              onStatus={setCaseStatus}
+              onAdd={addCase}
+              onRemove={removeCase}
+            />
+          ) : <div />}
           <div className="top-actions">
             <div className="mode-switch" role="group" aria-label="Advisor or corporate">
               <button type="button" className={audience === "advisor" ? "on" : ""} onClick={() => setAudience("advisor")}>Advisor</button>
@@ -251,10 +299,26 @@ export function EpfApp() {
               <span className="ios-switch-track" aria-hidden="true"><span className="ios-switch-knob" /></span>
             </button>
             <button className="theme-btn" type="button" title={theme === "dark" ? "Light mode" : "Dark mode"} aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"} onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}>{theme === "dark" ? "☀" : "☾"}</button>
-            <div className="who">{audience === "advisor" ? <><b>Advisor desk</b><span>Open file · {COMPANY.name}</span></> : <><b>K. Suda Wongsa</b><span>HR Director · Committee Secretary</span></>}</div>
+            <div className="who">{audience === "advisor" && activeCase ? <><b>Advisor desk</b><span>Open file · {activeCase.employer}</span></> : <><b>K. Suda Wongsa</b><span>HR Director · Committee Secretary</span></>}</div>
           </div>
         </header>
         <div className="content">
+          {audience === "advisor" && activeCase && !activeCase.worked && (
+            <div className="case-banner">
+              <b>{activeCase.employer}</b> is the open file ({statusLabel(activeCase.status)}). This case has no fee schedule and no return series. Figures on the screens stay the Rattana sample and are not this employer’s result.
+            </div>
+          )}
+          {brief && (
+            <div className="case-banner">
+              <b>{brief.mission}</b>
+              <p>Company {brief.company}. Provider {brief.provider}. Period: {brief.period}</p>
+              <p>Question: {brief.question}</p>
+              <div className="h-actions">
+                <button type="button" className="btn btn-secondary" onClick={returnToStart}>Back to Easy Start</button>
+                <button type="button" className="btn btn-ghost" onClick={() => setBrief(null)}>Clear</button>
+              </div>
+            </div>
+          )}
           <Views s={screen} api={api} />
         </div>
       </div>

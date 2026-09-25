@@ -322,7 +322,7 @@ div.nav-group:hover { opacity: 0.7; color: inherit; }
 .topbar {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 16px;
   padding: 10px 32px;
   border-bottom: 2px solid var(--color-divider);
@@ -409,6 +409,103 @@ div.nav-group:hover { opacity: 0.7; color: inherit; }
 .who { display: flex; flex-direction: column; font-size: 12px; line-height: 1.3; }
 .who b { font-size: 12px; }
 .who span { color: var(--color-neutral-700); }
+.case-bar { position: relative; display: flex; align-items: center; gap: 8px; min-width: 0; }
+.case-current {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  min-width: 0;
+  max-width: 280px;
+  border: 1px solid var(--color-divider);
+  background: transparent;
+  color: var(--color-text);
+  padding: 4px 10px;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+.case-current small {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  font-weight: 800;
+}
+.case-current b { font-size: 13px; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.case-current span { font-size: 11px; color: var(--color-neutral-700); }
+.case-add { padding: 8px 12px; font-size: 12px; white-space: nowrap; }
+.case-book {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 30;
+  width: min(440px, calc(100vw - 48px));
+  max-height: min(70vh, 640px);
+  overflow: auto;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-divider);
+  border-top: 3px solid var(--color-accent);
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
+.case-book-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.case-book-head strong { font-size: 18px; }
+.case-row { border: 1px solid var(--color-divider); padding: 10px; display: grid; gap: 8px; }
+.case-row.on { border-color: var(--color-accent); }
+.case-row-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.case-open { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-accent-700); }
+.case-status { display: flex; flex-wrap: wrap; }
+.case-status button {
+  border: 1px solid var(--color-divider);
+  border-right: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 8px;
+  cursor: pointer;
+}
+.case-status button:last-child { border-right: 1px solid var(--color-divider); }
+.case-status button.on { background: var(--color-accent); color: var(--color-on-accent); }
+.case-pop {
+  position: fixed;
+  z-index: 41;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(480px, calc(100vw - 32px));
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-divider);
+  border-top: 3px solid var(--color-accent);
+  padding: 22px 24px 24px;
+  display: grid;
+  gap: 12px;
+}
+.case-pop h2 { margin: 0; font-size: 22px; }
+.case-pop label { display: grid; gap: 4px; font-size: 12px; font-weight: 800; }
+.case-pop input, .case-pop textarea {
+  border: 1px solid var(--color-divider);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font: inherit;
+  font-weight: 400;
+  padding: 8px 10px;
+}
+.case-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.case-error { margin: 0; color: var(--color-accent-700); font-size: 13px; }
+.case-banner {
+  border: 1px solid var(--color-divider);
+  border-left: 3px solid var(--color-accent);
+  background: var(--color-surface);
+  padding: 12px 14px;
+  font-size: 14px;
+  line-height: 1.45;
+}
 
 .ai-panel {
   margin: 24px 32px 0;
@@ -948,6 +1045,8 @@ button.mcard { font: inherit; width: 100%; }
 }
 @media (max-width: 760px) {
   .topbar, .content, .ai-panel { padding-left: 16px; padding-right: 16px; }
+  .topbar { flex-wrap: wrap; }
+  .case-fields { grid-template-columns: 1fr; }
   .content { padding-top: 20px; }
   .qgrid, .scenarios, .poster-grid, .steps, .gap-row, .peer, .cohort { grid-template-columns: 1fr; }
   h1 { font-size: 32px; }

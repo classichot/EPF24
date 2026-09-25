@@ -2,11 +2,24 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { pageGuide, type Guide } from "@/lib/page-explain";
+import { statusLabel, type AdvisorCase } from "@/lib/cases";
+import type { OpenBrief } from "@/lib/easy-start";
 import type { Audience, ScreenId } from "@/lib/model";
 
-export const WorkspaceContext = createContext<{ audience: Audience; goto: (id: ScreenId) => void }>({
+export const WorkspaceContext = createContext<{
+  audience: Audience;
+  goto: (id: ScreenId) => void;
+  caseFile: AdvisorCase | null;
+  brief: OpenBrief | null;
+  setBrief: (brief: OpenBrief | null) => void;
+  returnToStart: () => void;
+}>({
   audience: "corporate",
   goto: () => {},
+  caseFile: null,
+  brief: null,
+  setBrief: () => {},
+  returnToStart: () => {},
 });
 
 function useChecks(code: string, count: number) {
@@ -53,11 +66,11 @@ function downloadPlaybook(guide: Guide) {
 }
 
 function GuideDialog({ guide, view, onView, onClose }: { guide: Guide; view: "explain" | "playbook"; onView: (view: "explain" | "playbook") => void; onClose: () => void }) {
-  const { audience, goto } = useContext(WorkspaceContext);
+  const { audience, goto, caseFile } = useContext(WorkspaceContext);
   const checks = useChecks(guide.code, guide.steps.length);
   const done = checks.checked.filter(Boolean).length;
   const mode = audience === "advisor"
-    ? "Advisor mode · the selected client’s provident-fund workspace"
+    ? `Advisor mode · ${caseFile ? `${caseFile.employer} · ${statusLabel(caseFile.status)}` : "no open case"}`
     : "Corporate mode · this employer’s provident-fund workspace";
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
