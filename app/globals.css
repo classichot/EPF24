@@ -355,6 +355,15 @@ div.nav-group:hover { opacity: 0.7; color: inherit; }
 }
 .mode-switch button:last-child { border-right: 0; }
 .mode-switch button.on { background: var(--color-accent); color: var(--color-on-accent); }
+.frame[data-audience="advisor"] {
+  --color-sidebar: #0c5c70;
+  --color-accent-deep: color-mix(in srgb, #000 28%, #0c5c70);
+  --color-mode: #149a94;
+}
+.frame[data-audience="advisor"] .nav-btn.on,
+.frame[data-audience="advisor"] .mode-switch button.on {
+  background: var(--color-mode);
+}
 .ios-switch {
   display: inline-flex;
   align-items: center;

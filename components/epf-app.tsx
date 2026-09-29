@@ -223,7 +223,7 @@ export function EpfApp() {
 
   return (
     <WorkspaceContext.Provider value={{ audience, goto, caseFile: audience === "advisor" ? activeCase : null, brief, setBrief, returnToStart }}>
-    <div className="frame" data-theme={theme} style={{ gridTemplateColumns: `${width}px minmax(0,1fr)`, userSelect: dragging ? "none" : "auto" }}>
+    <div className="frame" data-theme={theme} data-audience={audience} style={{ gridTemplateColumns: `${width}px minmax(0,1fr)`, userSelect: dragging ? "none" : "auto" }}>
       <aside className="side">
         <div className="side-brand">
           {!collapsed && (
