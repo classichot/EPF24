@@ -178,6 +178,7 @@ input[type="range"] { accent-color: var(--color-accent); width: 100%; }
   padding: var(--space-2);
   border-bottom: 2px solid var(--color-divider);
   white-space: nowrap;
+  vertical-align: bottom;
 }
 .table td {
   padding: var(--space-2);
@@ -185,7 +186,11 @@ input[type="range"] { accent-color: var(--color-accent); width: 100%; }
   vertical-align: top;
 }
 .table tbody tr:hover { background: color-mix(in srgb, var(--color-text) 4%, transparent); }
-.num { text-align: right; font-variant-numeric: tabular-nums; }
+.table th.num,
+.table td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
 
 .frame {
   display: grid;
