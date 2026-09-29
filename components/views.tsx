@@ -6,6 +6,8 @@ import { EasyStart } from "@/components/easy-start";
 import { FeeScreens } from "@/components/fee-views";
 import { PageHead as Head } from "@/components/page-head";
 import { NetworkScreen } from "@/components/network-view";
+import { RetirementOutcome } from "@/components/retirement-outcome";
+import { headlineRva } from "@/lib/retirement-outcome";
 import { MoatScreens } from "@/components/moat-views";
 import { PVD_EMPLOYERS, PVD_MANAGERS, PVD_PRODUCTS } from "@/lib/pvd-funds";
 import { CATALOG_CATEGORIES, CATALOG_MISSIONS, ENTRY_MISSIONS } from "@/lib/catalog";
@@ -160,6 +162,7 @@ export function Views({ s, api }: { s: ScreenId; api: Api }) {
   if (s === "marketplace") return <Marketplace />;
   if (s === "watch") return <Watch api={api} />;
   if (s === "committee") return <Committee api={api} />;
+  if (s === "quality") return <RetirementOutcome goto={api.goto} />;
   if (s === "employees") return <Employees api={api} />;
   if (s === "workforce") return <Workforce api={api} />;
   if (s === "designer") return <Designer api={api} />;
@@ -173,6 +176,7 @@ export function Views({ s, api }: { s: ScreenId; api: Api }) {
 function Home({ api }: { api: Api }) {
   const eff = meterScore();
   const ten = wealthDifference(10);
+  const rva = headlineRva();
   const questions: { q: string; a: string; d: string; c: string; color: string; go: ScreenId }[] = [
     {
       q: "Is our EPF performing well?",
@@ -191,12 +195,12 @@ function Home({ api }: { api: Api }) {
       go: "gap",
     },
     {
-      q: "Are employees getting good outcomes?",
-      a: "64% on track",
-      d: "36% are projected short of a 60% income-replacement target. The 51+ band is weakest.",
-      c: "Workforce health",
+      q: "What will this fund do for employees?",
+      a: `+${baht(rva.rva)}`,
+      d: `${rva.member.name}, age 35. Retirement value added versus the best-fit scenario. Not a guarantee, and not the employer fee saving. ${Math.round(COMPANY.onTrack * 100)}% of the workforce are still the on-track read.`,
+      c: "Retirement outcome",
       color: GOOD,
-      go: "workforce",
+      go: "quality",
     },
     {
       q: "Is there a better alternative?",

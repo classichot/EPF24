@@ -875,6 +875,8 @@ div.nav-group:hover { opacity: 0.7; color: inherit; }
 
 .split { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 28px; }
 .stack { display: flex; flex-direction: column; gap: 16px; }
+.pill-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.pill-row span { border: 1px solid var(--color-divider); padding: 4px 8px; font-size: 12px; }
 .rowline {
   padding: 14px 0;
   border-bottom: 1px solid var(--color-divider);

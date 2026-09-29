@@ -34,7 +34,8 @@ export type ScreenId =
   | "lab"
   | "gateway"
   | "start"
-  | "workspace";
+  | "workspace"
+  | "quality";
 
 export type Audience = "advisor" | "corporate";
 
@@ -51,12 +52,14 @@ export const NAV: { id: ScreenId; label: string; group: "desk" | "board" | "inte
   { id: "reports", label: "Reports", group: "board" },
   { id: "mission", label: "AGI Mission", group: "board", agi: true, llm: true },
   { id: "cio", label: "Autonomous CIO", group: "board", agi: true, llm: true },
+  { id: "quality", label: "Retirement outcome", group: "intel", llm: true },
   { id: "intel", label: "PVD Market", group: "intel", audience: "advisor" },
   { id: "network", label: "Intelligence network", group: "intel", audience: "advisor" },
   { id: "employers", label: "Employers", group: "intel", audience: "advisor" },
   { id: "compare", label: "Provider comparison", group: "intel", audience: "advisor" },
   { id: "employees", label: "Employee wealth", group: "intel", audience: "corporate" },
   { id: "workforce", label: "Retirement Intelligence", group: "intel", audience: "corporate" },
+  { id: "quality", label: "Retirement outcome", group: "intel", agi: true, llm: true },
   { id: "brain", label: "Market Brain", group: "intel", agi: true },
   { id: "shadow", label: "Shadow Market", group: "intel", agi: true },
   { id: "fair", label: "Fair Price", group: "intel", agi: true },
@@ -84,7 +87,10 @@ export const NAV_GROUPS: { id: (typeof NAV)[number]["group"]; label: string }[] 
   { id: "ops", label: "Operations" },
 ];
 
-export const AGI_SCREENS = new Set(NAV.filter((item) => item.agi).map((item) => item.id));
+const AGI_ONLY = NAV.filter((item) => item.agi).map((item) => item.id);
+const NORMAL_IDS = new Set(NAV.filter((item) => !item.agi).map((item) => item.id));
+/** Screens that exist only while AGI is on. A screen listed in both menus stays put when the switch moves. */
+export const AGI_SCREENS = new Set(AGI_ONLY.filter((id) => !NORMAL_IDS.has(id)));
 
 /** English names from the SEC PVD management-company list. Figures attached to them are a mock sample. */
 export const SAMPLE_AMCS = {
@@ -463,6 +469,13 @@ export function answerFor(q: string): { agent: string; a: string; screen: Screen
       `The ${COMPANY.provider} contract ends ${COMPANY.renewal}, ${COMPANY.renewalDays} days out. A tender can standardize fees, policies, service and migration into one format. Cheapest is not best: ${SAMPLE_AMCS.kf} at a mock 0.19% saves about ${baht(COMPANY.cheapestSaving)}, while the best-fit score balances performance, risk, fee, service and employee outcome.`,
       "tender",
       "Start EPF tender",
+    ],
+    [
+      /retirement outcome|value added|\brva\b|what will this|personaliz|investment architecture|lifecycle default/,
+      "Retirement Agent",
+      `Retirement outcome quality is the question, not the fee alone. For the sample member aged 35 the engine separates a fee effect on the balance from the investment scenario, and it does not add the employer’s ${baht(COMPANY.feeSaving)} fee opportunity into that balance. A 27-year-old and a 59-year-old are not given the same policy. No action remains available if the current provider reprices and adds a lifecycle default. Figures are a mock sample, not a guarantee.`,
+      "quality",
+      "Open retirement outcome",
     ],
     [
       /retire|enough|employee|member twin|my retirement/,

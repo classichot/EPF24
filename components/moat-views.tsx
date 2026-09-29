@@ -65,6 +65,7 @@ function Cio({ goto }: { goto: (id: ScreenId) => void }) {
         </div>
       </section>
       <div className="actions">
+        <button className="btn btn-secondary" type="button" onClick={() => goto("quality")}>Retirement outcome</button>
         <button className="btn btn-secondary" type="button" onClick={() => goto("shadow")}>Review evidence</button>
         <button className="btn btn-secondary" type="button" onClick={() => goto("twin")}>Simulate</button>
         <button className="btn btn-primary" type="button" onClick={() => setApproved(true)}>{approved ? "Queued for approval" : "Approve mission"}</button>

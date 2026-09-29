@@ -940,6 +940,36 @@ const GUIDES: { title: string; guide: Guide }[] = [
       { id: "marketplace", label: "Marketplace" },
     ],
   }) },
+  { title: "What will this provident fund actually do for my employees?", guide: g({
+    code: "RQ",
+    name: "Retirement outcome",
+    summary: "Compare funds by retirement outcome quality: cost, return, risk, investment choice, personalization, service and the member’s projected balance.",
+    when: "Use Retirement outcome when a fee ranking is not enough, and the question is what the fund does for employees.",
+    need: "The open sample file, one stated member, and the planning rates already used on the dashboard. A 10-year series is not required. Its absence is shown.",
+    leave: "A retirement value added figure for one member, with the employer fee saving kept in a separate lane, and a valid no-action result.",
+    features: [
+      { title: "Retirement value added", body: "Fee effect on the member balance, then the investment scenario. They sum to the headline. Allocation is a different member and is not added in." },
+      { title: "Employer fee lane", body: "The annual employer fee opportunity stays beside the member projection. It is not part of retirement value added." },
+      { title: "Performance quality", body: "One, three and five-year mock nets, plus risk and consistency. The page does not crown the highest single return." },
+      { title: "Architecture", body: "Policy menus from the sample book. A wider menu is not a claim about a live lineup." },
+      { title: "Two members", body: "A younger member can show a lifecycle gap. A member near retirement is not pushed into the same equity tilt." },
+      { title: "No action", body: "The current fund can stay if it reprices and adds a lifecycle default. Cheapest is not the recommendation." },
+    ],
+    before: "Confirm the figures are the Rattana mock sample. Do not read a planning rate as a published factsheet return.",
+    steps: [
+      { title: "Read the member headline", body: "Check age, salary and the two planning rates before quoting the baht figure." },
+      { title: "Keep the employer fee out of the member balance", body: "The yearly fee opportunity is a different lane." },
+      { title: "Read risk beside return", body: "A lower mock return with a smaller drawdown is a real comparison, not a loss." },
+      { title: "Decide, including no action", body: "Switch, ask for a lifecycle default, or record that the current arrangement stays." },
+    ],
+    outcome: "A labeled retirement scenario for one member, and a decision that does not treat the cheapest fee as the best outcome.",
+    related: [
+      { id: "employees", label: "Employee wealth" },
+      { id: "workforce", label: "Retirement Intelligence" },
+      { id: "gap", label: "Value Gap" },
+      { id: "bench", label: "Benchmark" },
+    ],
+  }) },
 ];
 
 export function pageGuide(title: string): Guide {
