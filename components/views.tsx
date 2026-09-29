@@ -1371,11 +1371,11 @@ function Mission({ api }: { api: Api }) {
           onChange={(v) => setCompetitive(v === "now")}
         />
       </div>
-      <div className="stats">
+      <div className="engine-row">
         {ENGINES.map((engine) => (
-          <button key={engine.id} className="stat" type="button" onClick={() => api.goto(engine.screen)} style={{ textAlign: "left", cursor: "pointer", font: "inherit", color: "inherit" }}>
+          <button key={engine.id} className="engine-card" type="button" onClick={() => api.goto(engine.screen)}>
             <span className="muted">{engine.name}</span>
-            <b style={{ fontSize: 16 }}>{engine.q}</b>
+            <b>{engine.q}</b>
           </button>
         ))}
       </div>

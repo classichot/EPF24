@@ -777,6 +777,41 @@ div.nav-group:hover { opacity: 0.7; color: inherit; }
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   border-top: 2px solid var(--color-text);
 }
+.engine-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 2px solid var(--color-text);
+  border-bottom: 2px solid var(--color-divider);
+}
+.engine-card {
+  margin: 0;
+  border: 0;
+  border-right: 1px solid var(--color-divider);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  padding: 22px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.engine-card:last-child { border-right: 0; }
+.engine-card:hover { background: var(--color-surface); }
+.engine-card b {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 16px;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+@media (max-width: 900px) {
+  .engine-row { grid-template-columns: 1fr 1fr; }
+  .engine-card:nth-child(2n) { border-right: 0; }
+  .engine-card:nth-child(-n + 2) { border-bottom: 1px solid var(--color-divider); }
+}
 .stat, .health-cell {
   padding: 14px 16px 16px 0;
   border-bottom: 2px solid var(--color-divider);
