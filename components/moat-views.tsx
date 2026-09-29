@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { PageHead as Head } from "@/components/page-head";
 import { COMPANY, PROVIDERS, baht, feeLabel, wealthDifference, type ScreenId } from "@/lib/model";
 import {
@@ -20,6 +20,10 @@ import {
   twinRun,
   type TwinId,
 } from "@/lib/moat";
+
+function Room({ children }: { children: ReactNode }) {
+  return <div className="page-room">{children}</div>;
+}
 
 function Trust({ items }: { items: string[] }) {
   return (
@@ -95,7 +99,7 @@ function Cio({ goto }: { goto: (id: ScreenId) => void }) {
 function Brain({ goto }: { goto: (id: ScreenId) => void }) {
   const [open, setOpen] = useState(TRANSACTIONS[0].id);
   return (
-    <>
+    <Room>
       <Head k="Market Brain" title="The transaction graph is the moat." lede="Public returns are the foundation. The private layer is what employers were actually offered, what they negotiated, what they chose, and what happened next." />
       <div className="split">
         <div>
@@ -142,7 +146,7 @@ function Brain({ goto }: { goto: (id: ScreenId) => void }) {
         <button className="btn btn-primary" type="button" onClick={() => goto("fair")}>Turn this into a fair price →</button>
       </div>
       <Trust items={["Employer names in the graph are withheld.", "These four cases are a prototype book so the screen has a shape. They are not live production records.", "Public ThaiPVD figures on the Intelligence screen stay labeled as public."]} />
-    </>
+    </Room>
   );
 }
 
@@ -151,7 +155,7 @@ function Shadow({ goto }: { goto: (id: ScreenId) => void }) {
   const competitive = mode === "now";
   const ten = wealthDifference(10);
   return (
-    <>
+    <Room>
       <Head k="Shadow Market" title="A virtual tender, running without a letter to anyone." lede="If this mandate went to market today, what might it clear? Sometimes the answer is: do nothing.">
         <div className="seg">
           <button type="button" className={mode === "now" ? "on" : ""} onClick={() => setMode("now")}>This employer</button>
@@ -198,7 +202,7 @@ function Shadow({ goto }: { goto: (id: ScreenId) => void }) {
       )}
       {!competitive && <p>Trust case: EPF24 does not manufacture a tender when the incumbent is already inside the observed range. The investment scenario can still be reviewed on its own.</p>}
       <Trust items={["Shadow prices are estimates from the sample book, not invitations sent to providers.", "87% is the prototype confidence label for 37 anonymized observations.", "10-year wealth compounds the 0.8 point scenario on current assets."]} />
-    </>
+    </Room>
   );
 }
 
@@ -327,7 +331,7 @@ function Twin() {
   ];
   const lede = `${COMPANY.members.toLocaleString("en-US")} employees · ${baht(COMPANY.aum)} · age, pay, contributions, allocation, provider, fees and projections in one model. Member records stay out of HR’s view.`;
   return (
-    <>
+    <Room>
       <Head k="Corporate EPF Digital Twin" title="The whole fund, not one member." lede={lede} />
       <div className="stats">
         {[
@@ -352,7 +356,7 @@ function Twin() {
         <p className="muted" style={{ margin: 0 }}>{run.note}</p>
       </div>
       <Trust items={["Match and fee cases use the deterministic engines.", "Life Path, mix-shift and shock adequacy moves are planning assumptions and are labeled as such."]} />
-    </>
+    </Room>
   );
 }
 
@@ -391,7 +395,7 @@ function Outcome() {
   const [id, setId] = useState(OUTCOMES[0].id);
   const row = OUTCOMES.find((o) => o.id === id)!;
   return (
-    <>
+    <Room>
       <Head k="Outcome engine" title="What actually happened after the decision." lede="Observe, predict, recommend, execute, measure, learn. A competitor with the same model and no history cannot answer these questions." />
       <div className="stats">
         <div className="stat"><span className="muted">This employer · predicted fee saving</span><b>{baht(COMPANY.feeSaving)}</b></div>
@@ -423,7 +427,7 @@ function Outcome() {
         </div>
       </div>
       <Trust items={["Closed cases are a prototype book.", "Accuracy is 1 minus the absolute miss, divided by the prediction.", "Rattana’s own result stays blank until a decision is executed and measured."]} />
-    </>
+    </Room>
   );
 }
 

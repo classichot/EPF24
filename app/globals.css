@@ -532,6 +532,15 @@ div.nav-group:hover { opacity: 0.7; color: inherit; }
   flex-direction: column;
   gap: 28px;
 }
+.page-room {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: min(100%, 1080px);
+  margin-right: auto;
+  padding: 4px clamp(20px, 4vw, 64px) 8px 16px;
+  box-sizing: border-box;
+}
 .page-head {
   display: flex;
   justify-content: space-between;
