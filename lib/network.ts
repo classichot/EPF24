@@ -70,7 +70,7 @@ export function sampleFundIntelligence(id = COMPANY.providerId) {
     ownAdjusted,
     cash: CASH,
     ten: wealthDifference(10),
-    analysis: `In the sample book, the 5-year return is ${returnVsPeer} the peer median and the all-in fee is ${feeVsPeer} the peer median. Sharpe uses a ${feeLabel(CASH)} planning cash rate and is ${ownSharpe >= peerSharpe ? "at or above" : "below"} the peer median. These providers are fictional. The sentence is the comparison, not a forecast and not an SEC factsheet.`,
+    analysis: `In the mock sample, the 5-year return is ${returnVsPeer} the peer median and the all-in fee is ${feeVsPeer} the peer median. Sharpe uses a ${feeLabel(CASH)} planning cash rate and is ${ownSharpe >= peerSharpe ? "at or above" : "below"} the peer median. The names are SEC management companies. The series is a mock, not a forecast and not an SEC factsheet.`,
   };
 }
 

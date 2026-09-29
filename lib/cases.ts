@@ -1,4 +1,4 @@
-import { baht } from "@/lib/model";
+import { SAMPLE_AMCS, baht } from "@/lib/model";
 
 export type CaseStatus = "intake" | "active" | "waiting" | "closed";
 
@@ -38,7 +38,7 @@ export const SEED_CASES: AdvisorCase[] = [
     employer: "Rattana Group PCL",
     members: 1820,
     aum: 800_000_000,
-    provider: "Siam Harbor AM",
+    provider: SAMPLE_AMCS.sh,
     status: "active",
     opened: "14 Aug 2026",
     note: "Worked sample. Fee and return figures on the screens belong to this file only.",

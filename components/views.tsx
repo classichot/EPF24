@@ -12,6 +12,7 @@ import { CATALOG_CATEGORIES, CATALOG_MISSIONS, ENTRY_MISSIONS } from "@/lib/cata
 import { ENGINES, agiSteps, agiVerdict } from "@/lib/moat";
 import {
   COMPANY,
+  SAMPLE_AMCS,
   CRITERIA,
   METER,
   NAV,
@@ -313,7 +314,7 @@ function Home({ api }: { api: Api }) {
             <h6>Committee actions</h6>
             <div className="rule">
               {[
-                ["Request a repricing proposal from Siam Harbor AM", "30 Sep"],
+                [`Request a repricing proposal from ${COMPANY.provider}`, "30 Sep"],
                 ["Approve the peer group for the benchmark", "8 Oct"],
                 ["Decide: renegotiate, market-test, or tender", "8 Oct"],
               ].map(([t, due]) => (
@@ -325,7 +326,7 @@ function Home({ api }: { api: Api }) {
           </div>
           <div className="ink">
             <span className="eyebrow">Upcoming renewal · tender not started</span>
-            <strong style={{ fontFamily: "var(--font-heading)", fontSize: 22 }}>Siam Harbor AM contract ends {COMPANY.renewal}</strong>
+            <strong style={{ fontFamily: "var(--font-heading)", fontSize: 22 }}>{COMPANY.provider} contract ends {COMPANY.renewal}</strong>
             <span style={{ fontSize: 13, opacity: 0.85 }}>{COMPANY.renewalDays} days. A market test can price alternatives before a tender. A tender still needs about 14 weeks, including member communication.</span>
             <button className="btn btn-ink" style={{ alignSelf: "flex-start", marginTop: 6 }} onClick={() => api.goto("tender")}>Plan tender →</button>
           </div>
@@ -437,7 +438,7 @@ function Compare({ api }: { api: Api }) {
   ];
   return (
     <>
-      <Head k="03 — Compare" title="Best fit for this workforce, not a universal winner." lede={`Balanced-policy figures for ${COMPANY.name}: ${baht(COMPANY.aum)}, ${COMPANY.members.toLocaleString("en-US")} members, average age ${COMPANY.avgAge}. You set the priorities.`} />
+      <Head k="03 — Compare" title="Best fit for this workforce, not a universal winner." lede={`Example for ${COMPANY.name}: ${baht(COMPANY.aum)}, ${COMPANY.members.toLocaleString("en-US")} members, average age ${COMPANY.avgAge}. The managers are real SEC names. The fees and returns are a mock sample, not their published figures.`} />
       <div className="stats">
         {[
           ["Company", "Large listed"],
@@ -494,7 +495,7 @@ function Compare({ api }: { api: Api }) {
         <button className="btn btn-primary" onClick={() => api.goto("tender")}>Invite these to a tender →</button>
         <button className="btn btn-secondary" onClick={() => api.goto("market")}>Or test anonymously</button>
       </div>
-      <Trust items={["Source: AMC factsheets, service registry — prototype sample", "Benchmark: Thai EPF balanced peer group", "Period: to 30 Jun 2026", "Annual cost = stated all-in rate × ฿800M", "Calc: deterministic"]} />
+      <Trust items={["Names: SEC PVD management companies", "Fees, returns, volatility and service scores: mock sample for this file, not SEC figures and not live bids", "Life Path yes or no follows the SEC manager list", "Annual cost = mock all-in rate × ฿800M", "Highlighted cell = best in that row only"]} />
     </>
   );
 }
@@ -586,7 +587,7 @@ function Bench({ api }: { api: Api }) {
               </div>
               <div>
                 <h6>AI action</h6>
-                <p>Consider repricing with Siam Harbor AM, or run an anonymous market test before a tender.</p>
+                <p>Consider repricing with {COMPANY.provider}, or run an anonymous market test before a tender.</p>
                 {[
                   "Employer-borne admin is the largest fee outlier.",
                   "Add a Life Path default. 71% of members are in Balanced by inertia.",
@@ -673,7 +674,7 @@ function Gap({ api }: { api: Api }) {
           </article>
         </div>
       </div>
-      <Trust items={["Annual value = fee opportunity + one-year investment scenario", `10-year wealth = ${baht(COMPANY.aum)} × ((1.046^10) − (1.038^10))`, "Renegotiate target 0.235% is a planning case, not an offer", "Switch fee uses best-fit Chao Phraya at 0.206% (฿1.65M), not the 0.19% floor", "Calc: deterministic · AI explains only"]} />
+      <Trust items={["Annual value = fee opportunity + one-year investment scenario", `10-year wealth = ${baht(COMPANY.aum)} × ((1.046^10) − (1.038^10))`, "Renegotiate target 0.235% is a planning case, not an offer", `Switch fee uses best-fit ${SAMPLE_AMCS.cp} at a mock 0.206% (฿1.65M), not the 0.19% floor and not that company’s published fee`, "Calc: deterministic · AI explains only"]} />
     </>
   );
 }
@@ -749,7 +750,7 @@ function Negotiation({ aum }: { aum: number }) {
   return (
     <div className="split">
       <div>
-        <h6>Negotiation pack · stay with Siam Harbor AM</h6>
+        <h6>Negotiation pack · stay with {COMPANY.provider}</h6>
         <div className="rule">
           {[
             ["Current pricing", "0.30% all-in"],
@@ -852,12 +853,12 @@ function Tender({ api }: { api: Api }) {
             <thead><tr><th>Provider</th><th>Invited</th><th>Status</th><th>Q&A</th><th className="num">Normalized</th></tr></thead>
             <tbody>
               {[
-                ["Chao Phraya Capital", "Submitted", "3", "Yes", "tag-accent"],
-                ["Lanna Asset", "Submitted", "5", "Yes", "tag-accent"],
-                ["Andaman Investment", "Submitted", "2", "Yes", "tag-accent"],
-                ["Krungthep Fund Partners", "Submitted", "4", "Yes", "tag-accent"],
-                ["Siam Harbor AM (incumbent)", "Repriced offer", "1", "Yes", "tag-outline"],
-                ["Northgate AM", "Declined", "0", "—", "tag-neutral"],
+                [SAMPLE_AMCS.cp, "Submitted", "3", "Yes", "tag-accent"],
+                [SAMPLE_AMCS.la, "Submitted", "5", "Yes", "tag-accent"],
+                [SAMPLE_AMCS.an, "Submitted", "2", "Yes", "tag-accent"],
+                [SAMPLE_AMCS.kf, "Submitted", "4", "Yes", "tag-accent"],
+                [`${SAMPLE_AMCS.sh} (incumbent)`, "Repriced offer", "1", "Yes", "tag-outline"],
+                [SAMPLE_AMCS.ng, "Declined", "0", "—", "tag-neutral"],
               ].map(([name, status, qa, norm, tag]) => (
                 <tr key={name}><td style={{ fontWeight: 600 }}>{name}</td><td>7 Oct</td><td><span className={`tag ${tag}`}>{status}</span></td><td>{qa}</td><td className="num">{norm}</td></tr>
               ))}
@@ -901,7 +902,7 @@ function Tender({ api }: { api: Api }) {
                 <b style={{ textAlign: "right" }}>{m.score.toFixed(1)}</b>
               </div>
             ))}
-            <p className="muted">Weighted from normalized proposals. Independent Challenger: Andaman’s return lead leans on a 2024 foreign-equity overweight. Krungthep’s fee holds on a 5-year term. Chao Phraya leads when employee outcome and Life Path carry weight. Scores use the sample matrix in this prototype, not a live auction.</p>
+            <p className="muted">Weighted from normalized proposals. Independent Challenger: {SAMPLE_AMCS.an}’s return lead in this mock leans on a 2024 foreign-equity overweight. {SAMPLE_AMCS.kf}’s fee holds on a 5-year term. {SAMPLE_AMCS.cp} leads when employee outcome and Life Path carry weight. Scores use the mock sample, not a live auction and not an SEC return.</p>
           </div>
         </div>
       )}
@@ -939,7 +940,7 @@ function Marketplace() {
       {tab === "amc" && (
         <div className="split">
           <div className="stack">
-            <span className="tag tag-accent" style={{ alignSelf: "flex-start" }}>Provider portal · Lanna Asset</span>
+            <span className="tag tag-accent" style={{ alignSelf: "flex-start" }}>Provider portal · {SAMPLE_AMCS.la}</span>
             <h2 style={{ margin: 0 }}>Incoming RFP — profile withheld</h2>
             <p>About {baht(COMPANY.aum)} · about {COMPANY.members.toLocaleString("en-US")} members · Life Path, ESG and a bilingual app required. Deadline 4 Nov 2026. Employer name stays hidden until the committee opens the shortlist.</p>
             <div style={{ borderTop: "2px solid var(--color-text)" }}>
@@ -1061,7 +1062,7 @@ function Committee({ api }: { api: Api }) {
             ))}
           </div>
           <div>
-            <h6>Questions for Siam Harbor AM</h6>
+            <h6>Questions for {COMPANY.provider}</h6>
             {[
               "Which fee layers explain 0.30% against a qualified range of 0.19–0.22%?",
               "What drove the lag versus the comparable universe, and what has changed?",

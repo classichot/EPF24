@@ -10,10 +10,10 @@ import { WorkspaceContext } from "@/components/page-head";
 import { Views, type Api, type Design, type Doc, type Emp } from "@/components/views";
 
 const DOCS: Doc[] = [
-  { n: "EPF Management Agreement 2022.pdf", t: "Contract", src: "Siam Harbor AM", f: "128", s: "Reviewed", d: "14 Aug 2026" },
+  { n: "EPF Management Agreement 2022.pdf", t: "Contract", src: COMPANY.provider, f: "128", s: "Reviewed", d: "14 Aug 2026" },
   { n: "Fee Schedule 2026.xlsx", t: "Fee schedule", src: "HR upload", f: "44", s: "Reviewed", d: "14 Aug 2026" },
   { n: "Balanced Fund Factsheet Jun-26.pdf", t: "Factsheet", src: "ThaiPVD", f: "36", s: "Reviewed", d: "2 Jul 2026" },
-  { n: "Q2 Investment Report.pdf", t: "Provider report", src: "Siam Harbor AM", f: "92", s: "Reviewed", d: "28 Jul 2026" },
+  { n: "Q2 Investment Report.pdf", t: "Provider report", src: COMPANY.provider, f: "92", s: "Reviewed", d: "28 Jul 2026" },
   { n: "Committee Minutes Q2.docx", t: "Minutes", src: "Committee AI", f: "18", s: "Approved", d: "15 Jul 2026" },
   { n: "Investment Policy Statement v3.pdf", t: "Policy", src: "Committee", f: "27", s: "Reviewed", d: "10 Mar 2026" },
   { n: "SEC Consultation Jul-26.pdf", t: "Regulation", src: "SEC", f: "12", s: "Monitored", d: "22 Jul 2026" },

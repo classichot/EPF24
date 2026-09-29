@@ -97,7 +97,7 @@ export function NetworkScreen({ goto }: { goto: (id: ScreenId) => void }) {
         </tbody>
       </table>
       <h6>Sample fund · {fund.name}</h6>
-      <p className="muted">Schema: Fund → Policy → Manager → Return → Fee → Risk. Filled from the fictional provider book, because the SEC subscription is not connected and a real fund name is not given an invented return.</p>
+      <p className="muted">Schema: Fund → Policy → Manager → Return → Fee → Risk. Manager names are from the SEC PVD list. Returns and fees in this table are a mock sample, because the SEC subscription is not connected.</p>
       <div className="stats">
         <div className="stat"><span className="muted">5Y return</span><b>{fund.r5.toFixed(1)}%</b><span className="muted">Peer median {intel.peerReturn.toFixed(1)}%</span></div>
         <div className="stat"><span className="muted">All-in fee</span><b>{feeLabel(fund.fee)}</b><span className="muted">Peer median {feeLabel(intel.peerFee)}</span></div>

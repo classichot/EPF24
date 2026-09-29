@@ -86,11 +86,21 @@ export const NAV_GROUPS: { id: (typeof NAV)[number]["group"]; label: string }[] 
 
 export const AGI_SCREENS = new Set(NAV.filter((item) => item.agi).map((item) => item.id));
 
+/** English names from the SEC PVD management-company list. Figures attached to them are a mock sample. */
+export const SAMPLE_AMCS = {
+  sh: "First Plus Asset Management",
+  cp: "Kasikorn Asset Management",
+  la: "BBL Asset Management",
+  an: "SCB Asset Management",
+  ng: "abrdn",
+  kf: "Krungthai Asset Management",
+} as const;
+
 export const COMPANY = {
   name: "Rattana Group PCL",
   members: 1820,
   aum: 800_000_000,
-  provider: "Siam Harbor AM",
+  provider: SAMPLE_AMCS.sh,
   providerId: "sh",
   annualCost: 2_400_000,
   feeRate: 0.003,
@@ -162,12 +172,12 @@ export type Provider = {
 };
 
 export const PROVIDERS: Provider[] = [
-  { id: "sh", name: "Siam Harbor AM", fee: 0.003, r1: 4.1, r3: 3.8, r5: 3.9, vol: 6.8, dd: -9.4, choices: 4, life: false, esg: false, digital: 62, edu: 48, sla: 72, global: true },
-  { id: "cp", name: "Chao Phraya Capital", fee: 0.0020625, r1: 5.0, r3: 4.4, r5: 4.4, vol: 7.1, dd: -10.2, choices: 11, life: true, esg: true, digital: 84, edu: 77, sla: 80, global: true },
-  { id: "la", name: "Lanna Asset", fee: 0.0022, r1: 4.6, r3: 4.2, r5: 4.1, vol: 6.2, dd: -8.1, choices: 9, life: true, esg: true, digital: 71, edu: 69, sla: 76, global: true },
-  { id: "an", name: "Andaman Investment", fee: 0.0025, r1: 5.4, r3: 4.6, r5: 4.0, vol: 8.3, dd: -12.6, choices: 14, life: true, esg: true, digital: 90, edu: 72, sla: 74, global: true },
-  { id: "ng", name: "Northgate AM", fee: 0.0024, r1: 3.8, r3: 3.6, r5: 3.7, vol: 5.4, dd: -7.0, choices: 7, life: false, esg: false, digital: 58, edu: 55, sla: 68, global: false },
-  { id: "kf", name: "Krungthep Fund Partners", fee: 0.0019, r1: 4.9, r3: 4.3, r5: 4.3, vol: 6.9, dd: -9.8, choices: 10, life: true, esg: true, digital: 77, edu: 81, sla: 70, global: true },
+  { id: "sh", name: SAMPLE_AMCS.sh, fee: 0.003, r1: 4.1, r3: 3.8, r5: 3.9, vol: 6.8, dd: -9.4, choices: 4, life: false, esg: false, digital: 62, edu: 48, sla: 72, global: true },
+  { id: "cp", name: SAMPLE_AMCS.cp, fee: 0.0020625, r1: 5.0, r3: 4.4, r5: 4.4, vol: 7.1, dd: -10.2, choices: 11, life: true, esg: true, digital: 84, edu: 77, sla: 80, global: true },
+  { id: "la", name: SAMPLE_AMCS.la, fee: 0.0022, r1: 4.6, r3: 4.2, r5: 4.1, vol: 6.2, dd: -8.1, choices: 9, life: true, esg: true, digital: 71, edu: 69, sla: 76, global: true },
+  { id: "an", name: SAMPLE_AMCS.an, fee: 0.0025, r1: 5.4, r3: 4.6, r5: 4.0, vol: 8.3, dd: -12.6, choices: 14, life: true, esg: true, digital: 90, edu: 72, sla: 74, global: true },
+  { id: "ng", name: SAMPLE_AMCS.ng, fee: 0.0024, r1: 3.8, r3: 3.6, r5: 3.7, vol: 5.4, dd: -7.0, choices: 7, life: false, esg: false, digital: 58, edu: 55, sla: 68, global: false },
+  { id: "kf", name: SAMPLE_AMCS.kf, fee: 0.0019, r1: 4.9, r3: 4.3, r5: 4.3, vol: 6.9, dd: -9.8, choices: 10, life: true, esg: true, digital: 77, edu: 81, sla: 70, global: true },
 ];
 
 export function annualCost(fee: number, aum = COMPANY.aum) {
@@ -240,11 +250,11 @@ export const DEFAULT_WEIGHTS: Record<string, number> = {
 export function scoreBids(weights: Record<string, number>) {
   const sum = Object.values(weights).reduce((a, b) => a + b, 0) || 1;
   const names: Record<string, string> = {
-    cp: "Chao Phraya Capital",
-    la: "Lanna Asset",
-    an: "Andaman Investment",
-    kf: "Krungthep Fund Partners",
-    sh: "Siam Harbor AM (incumbent)",
+    cp: SAMPLE_AMCS.cp,
+    la: SAMPLE_AMCS.la,
+    an: SAMPLE_AMCS.an,
+    kf: SAMPLE_AMCS.kf,
+    sh: `${SAMPLE_AMCS.sh} (incumbent)`,
   };
   const notes: Record<string, string> = {
     cp: "0.206% · 11 policies · Life Path · best fit",
@@ -373,7 +383,7 @@ export function answerFor(q: string): { agent: string; a: string; screen: Screen
     [
       /fee|cost|pay|expens|saving/,
       "Fee Analyst",
-      `All-in cost is 0.30% of assets, ${baht(COMPANY.annualCost)} a year. A best-fit market alternative prices near ${baht(COMPANY.altCost)}. That is about ${baht(COMPANY.feeSaving)} of annual corporate fee opportunity. The qualified fee range is 0.19–0.22%. You can ask Siam Harbor AM to reprice, or test the market without naming the company.`,
+      `All-in cost is 0.30% of assets, ${baht(COMPANY.annualCost)} a year. A best-fit market alternative prices near ${baht(COMPANY.altCost)}. That is about ${baht(COMPANY.feeSaving)} of annual corporate fee opportunity. The qualified fee range is 0.19–0.22%. You can ask ${COMPANY.provider} to reprice, or test the market without naming the company. Those rates are a mock sample, not published fees.`,
       "gap",
       "Open the value gap",
     ],
@@ -450,7 +460,7 @@ export function answerFor(q: string): { agent: string; a: string; screen: Screen
     [
       /tender|rfp|auction|bid/,
       "Procurement Agent",
-      `The Siam Harbor AM contract ends ${COMPANY.renewal}, ${COMPANY.renewalDays} days out. A tender can standardize fees, policies, service and migration into one format. Cheapest is not best: Krungthep at 0.19% saves about ${baht(COMPANY.cheapestSaving)}, while the best-fit score balances performance, risk, fee, service and employee outcome.`,
+      `The ${COMPANY.provider} contract ends ${COMPANY.renewal}, ${COMPANY.renewalDays} days out. A tender can standardize fees, policies, service and migration into one format. Cheapest is not best: ${SAMPLE_AMCS.kf} at a mock 0.19% saves about ${baht(COMPANY.cheapestSaving)}, while the best-fit score balances performance, risk, fee, service and employee outcome.`,
       "tender",
       "Start EPF tender",
     ],

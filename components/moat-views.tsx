@@ -57,7 +57,7 @@ function Cio({ goto }: { goto: (id: ScreenId) => void }) {
       <section className="poster">
         <div className="kicker">EPF24 found one action worth {baht(COMPANY.annualValue)}</div>
         <div className="poster-num" style={{ fontSize: 48 }}>Negotiate</div>
-        <div>Siam Harbor AM is outside the observed price zone for this mandate. Switching is not required to capture the corporate piece.</div>
+        <div>{COMPANY.provider} is outside the observed price zone for this mandate. Switching is not required to capture the corporate piece. The zone is a mock sample, not that company’s published fee.</div>
         <div className="poster-grid">
           <div><b>{baht(COMPANY.feeSaving)}</b><span>Corporate fee opportunity / year</span></div>
           <div><b>{baht(COMPANY.investOpp)}</b><span>Employee investment scenario / year</span></div>
@@ -164,7 +164,7 @@ function Shadow({ goto }: { goto: (id: ScreenId) => void }) {
       </Head>
       <div className="split">
         <div className="surface">
-          <h6 style={{ margin: 0 }}>Current provider · Siam Harbor AM</h6>
+          <h6 style={{ margin: 0 }}>Current provider · {COMPANY.provider}</h6>
           <div className="big">{mode === "now" ? baht(COMPANY.annualCost) : baht(COMPANY.altCost)}</div>
           <span className="muted">{mode === "now" ? "0.30% all-in" : "Repriced to the best-fit 0.206%"}</span>
           <div>Service 72/100 · net 3.8% · Life Path not offered</div>
@@ -311,7 +311,7 @@ function Nego({ goto }: { goto: (id: ScreenId) => void }) {
           <button className="btn btn-secondary" type="button" onClick={() => goto("committee")}>Take it to the committee</button>
         </div>
       )}
-      <Trust items={["Nothing is delivered to Siam Harbor AM from this screen.", "Landing zone is the sample pattern for incumbents who are challenged, not a promise.", "A full best-fit switch is a different decision from a reprice."]} />
+      <Trust items={[`Nothing is delivered to ${COMPANY.provider} from this screen.`, "Landing zone is the sample pattern for incumbents who are challenged, not a promise.", "A full best-fit switch is a different decision from a reprice."]} />
     </>
   );
 }
