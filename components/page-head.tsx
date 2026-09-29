@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { pageGuide, type Guide } from "@/lib/page-explain";
-import { statusLabel, type AdvisorCase } from "@/lib/cases";
+import { statusLabel, type AdvisorCase, type CaseStatus, type NewCase } from "@/lib/cases";
 import type { OpenBrief } from "@/lib/easy-start";
 import type { Audience, ScreenId } from "@/lib/model";
 
@@ -10,6 +10,11 @@ export const WorkspaceContext = createContext<{
   audience: Audience;
   goto: (id: ScreenId) => void;
   caseFile: AdvisorCase | null;
+  cases: AdvisorCase[];
+  selectCase: (id: string) => void;
+  setCaseStatus: (id: string, status: CaseStatus) => void;
+  addCase: (input: NewCase) => void;
+  removeCase: (id: string) => void;
   brief: OpenBrief | null;
   setBrief: (brief: OpenBrief | null) => void;
   returnToStart: () => void;
@@ -17,6 +22,11 @@ export const WorkspaceContext = createContext<{
   audience: "corporate",
   goto: () => {},
   caseFile: null,
+  cases: [],
+  selectCase: () => {},
+  setCaseStatus: () => {},
+  addCase: () => {},
+  removeCase: () => {},
   brief: null,
   setBrief: () => {},
   returnToStart: () => {},

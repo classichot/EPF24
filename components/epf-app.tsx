@@ -19,6 +19,14 @@ const DOCS: Doc[] = [
   { n: "SEC Consultation Jul-26.pdf", t: "Regulation", src: "SEC", f: "12", s: "Monitored", d: "22 Jul 2026" },
 ];
 
+function Crown() {
+  return (
+    <svg className="brand-crown" viewBox="0 0 24 24" role="img" aria-label="Advisor">
+      <path fill="currentColor" d="M3 17.5h18V20H3v-2.5zM4.2 16 2 7.2l5.4 3.4L12 4l4.6 6.6L22 7.2 19.8 16H4.2z" />
+    </svg>
+  );
+}
+
 export function EpfApp() {
   const [screen, setScreen] = useState<ScreenId>("start");
   const [theme, setTheme] = useState<"light" | "dark">("dark");
@@ -222,13 +230,14 @@ export function EpfApp() {
   const width = collapsed ? 64 : sideW;
 
   return (
-    <WorkspaceContext.Provider value={{ audience, goto, caseFile: audience === "advisor" ? activeCase : null, brief, setBrief, returnToStart }}>
-    <div className="frame" data-theme={theme} data-audience={audience} style={{ gridTemplateColumns: `${width}px minmax(0,1fr)`, userSelect: dragging ? "none" : "auto" }}>
+    <WorkspaceContext.Provider value={{ audience, goto, caseFile: audience === "advisor" ? activeCase : null, cases, selectCase: setActiveId, setCaseStatus, addCase, removeCase, brief, setBrief, returnToStart }}>
+    <div className="frame" data-theme={theme} style={{ gridTemplateColumns: `${width}px minmax(0,1fr)`, userSelect: dragging ? "none" : "auto" }}>
       <aside className="side">
         <div className="side-brand">
+          {collapsed && audience === "advisor" && <Crown />}
           {!collapsed && (
             <div>
-              <div className="brand-mark">EPF24</div>
+              <div className="brand-mark">{audience === "advisor" && <Crown />}EPF24</div>
               <div className="brand-sub">{agiOn ? "Intelligence and exchange layer" : audience === "advisor" ? "Advisor workspace" : "Employee Provident Fund Intelligence"}</div>
             </div>
           )}
@@ -261,11 +270,11 @@ export function EpfApp() {
         {!collapsed && (
           <div className="side-foot">
             {audience === "advisor" && activeCase ? (
-              <>
+              <button type="button" className="side-file" onClick={() => goto("workspace")}>
                 <b>Advisor workspace</b>
                 <div style={{ opacity: 0.85 }}>{activeCase.employer}</div>
                 <div style={{ opacity: 0.85 }}>{statusLabel(activeCase.status)} · {activeCase.worked ? `${activeCase.members?.toLocaleString("en-US")} members · ${baht(activeCase.aum ?? 0)} assets` : "Insufficient evidence"}</div>
-              </>
+              </button>
             ) : (
               <>
                 <b>{COMPANY.name}</b>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { WorkspacePage } from "@/components/case-control";
 import { EasyStart } from "@/components/easy-start";
 import { FeeScreens } from "@/components/fee-views";
 import { PageHead as Head } from "@/components/page-head";
@@ -144,6 +145,7 @@ export function Views({ s, api }: { s: ScreenId; api: Api }) {
   if (moat) return moat;
   const fee = FeeScreens({ s, goto: api.goto });
   if (fee) return fee;
+  if (s === "workspace") return <WorkspacePage />;
   if (s === "start") return <EasyStart />;
   if (s === "home") return <Home api={api} />;
   if (s === "intel") return <Intel api={api} />;

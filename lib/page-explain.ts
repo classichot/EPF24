@@ -943,6 +943,36 @@ const GUIDES: { title: string; guide: Guide }[] = [
 ];
 
 export function pageGuide(title: string): Guide {
+  if (title === "Case control") {
+    return g({
+      code: "WS",
+      name: "Workspace",
+      summary: "Hold every client file in one book, and keep one file open. A new case starts empty.",
+      when: "Use Case control when you take on a client, switch the open file, or close a mandate.",
+      need: "The employer name. Members, assets, and the provider can wait. A missing fee schedule is a valid file.",
+      leave: "One open file, a status, and a book that does not copy another employer’s fees or returns.",
+      features: [
+        { title: "Open file", body: "One employer is open. Other screens read that file. They do not mix it with another case." },
+        { title: "Status", body: "Intake, in progress, waiting, or closed. Status is a label. It does not calculate a fee or a return." },
+        { title: "Add case", body: "A new employer starts with no fee and no return series. The Rattana sample stays on the Rattana file." },
+        { title: "Remove case", body: "A case you added can be removed. The sample files stay in the book." },
+        { title: "Insufficient evidence", body: "A file with no contract is still a file. Figures elsewhere stay labeled as the Rattana sample." },
+      ],
+      before: "Confirm you are in advisor mode. Corporate mode is one employer and does not use this book.",
+      steps: [
+        { title: "Open the file you are working", body: "The header and the menu footer follow the same open file." },
+        { title: "Set the status", body: "Waiting means a document is still out. It is not a result." },
+        { title: "Add a case only with what you know", body: "Leave members and assets blank if they are unknown. Do not borrow another employer’s numbers." },
+        { title: "Leave the sample files in place", body: "Only Rattana carries the worked fee and return scenario." },
+      ],
+      outcome: "The open client file is named, and no fee or return has been copied onto a case that does not have them.",
+      related: [
+        { id: "start", label: "Easy Start" },
+        { id: "home", label: "Dashboard" },
+        { id: "employers", label: "Employers" },
+      ],
+    });
+  }
   if (title.startsWith("What would you like to improve")) {
     return g({
       code: "00",

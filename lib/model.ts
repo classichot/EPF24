@@ -33,11 +33,13 @@ export type ScreenId =
   | "xray"
   | "lab"
   | "gateway"
-  | "start";
+  | "start"
+  | "workspace";
 
 export type Audience = "advisor" | "corporate";
 
-export const NAV: { id: ScreenId; label: string; group: "board" | "intel" | "ops"; agi?: boolean; audience?: Audience }[] = [
+export const NAV: { id: ScreenId; label: string; group: "desk" | "board" | "intel" | "ops"; agi?: boolean; audience?: Audience }[] = [
+  { id: "workspace", label: "Case control", group: "desk", audience: "advisor" },
   { id: "start", label: "Easy Start", group: "board" },
   { id: "home", label: "Dashboard", group: "board" },
   { id: "mypvd", label: "My EPF", group: "board", audience: "corporate" },
@@ -76,6 +78,7 @@ export const NAV: { id: ScreenId; label: string; group: "board" | "intel" | "ops
 ];
 
 export const NAV_GROUPS: { id: (typeof NAV)[number]["group"]; label: string }[] = [
+  { id: "desk", label: "Workspace" },
   { id: "board", label: "Dashboard and decision board" },
   { id: "intel", label: "Intelligences" },
   { id: "ops", label: "Operations" },
