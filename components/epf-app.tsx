@@ -64,6 +64,7 @@ export function EpfApp() {
   const [reports, setReports] = useState<number[]>([]);
   const [ready, setReady] = useState(false);
   const [closed, setClosed] = useState<Record<string, boolean>>({});
+  const [llmOn, setLlmOn] = useState(false);
 
   useEffect(() => {
     try {
@@ -79,6 +80,15 @@ export function EpfApp() {
     setCases(book.cases);
     setActiveId(book.activeId);
     setReady(true);
+  }, []);
+
+  useEffect(() => {
+    let cancel = false;
+    fetch("/api/llm/status")
+      .then((res) => res.json())
+      .then((data) => { if (!cancel) setLlmOn(data?.connected === true); })
+      .catch(() => { if (!cancel) setLlmOn(false); });
+    return () => { cancel = true; };
   }, []);
 
   useEffect(() => {
@@ -258,9 +268,10 @@ export function EpfApp() {
                   </button>
                 )}
                 {!shut && group.items.map((item, i) => (
-                  <button key={item.id} className={screen === item.id ? "nav-btn on" : "nav-btn"} title={item.label} type="button" onClick={() => goto(item.id)}>
+                  <button key={item.id} className={screen === item.id ? "nav-btn on" : "nav-btn"} title={item.llm && llmOn ? `${item.label} · AI ready` : item.label} type="button" onClick={() => goto(item.id)}>
                     <span>{String(i + 1).padStart(2, "0")}</span>
                     {!collapsed && <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
+                    {!collapsed && item.llm && llmOn && <span className="ai-badge">AI</span>}
                   </button>
                 ))}
               </div>

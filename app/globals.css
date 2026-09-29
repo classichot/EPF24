@@ -256,8 +256,8 @@ input[type="range"] { accent-color: var(--color-accent); width: 100%; }
 }
 .nav-btn {
   display: grid;
-  grid-template-columns: 28px 1fr;
-  align-items: baseline;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
   text-align: left;
   border: 0;
   border-left: 4px solid transparent;
@@ -269,7 +269,24 @@ input[type="range"] { accent-color: var(--color-accent); width: 100%; }
   font-weight: 400;
   white-space: nowrap;
 }
+.nav-btn:has(.ai-badge) { grid-template-columns: 28px minmax(0, 1fr) auto; }
 .nav-btn span:first-child { font-size: 11px; opacity: 0.75; }
+.ai-badge {
+  margin-right: 10px;
+  border: 1px solid currentColor;
+  padding: 2px 4px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  animation: ai-blink 1.1s steps(2, end) infinite;
+}
+@keyframes ai-blink {
+  50% { opacity: 0.15; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-badge { animation: none; }
+}
 .nav-btn.on {
   background: var(--color-accent);
   border-left-color: var(--color-on-accent);

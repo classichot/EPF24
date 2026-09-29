@@ -92,10 +92,10 @@ function GuideDialog({ guide, view, onView, onClose }: { guide: Guide; view: "ex
   return (
     <>
       <div className="explain-backdrop" onClick={onClose} />
-      <div className="guide-pop" role="dialog" aria-modal="true" aria-label={view === "explain" ? "Explain this page" : "Playbook"}>
+      <div className="guide-pop" role="dialog" aria-modal="true" aria-label={view === "explain" ? "Explain me this page" : "Playbook"}>
         <div className="guide-top">
           <div className="guide-title-row">
-            <h2>{view === "explain" ? "Explain this page" : "Playbook"} · {guide.code} {guide.name}</h2>
+            <h2>{view === "explain" ? "Explain me this page" : "Playbook"} · {guide.code} {guide.name}</h2>
             <button type="button" className="guide-x" onClick={onClose} aria-label="Close">×</button>
           </div>
           <p className="guide-mode">{mode}</p>
@@ -183,7 +183,7 @@ export function PageHead({ k, title, lede, children }: { k: string; title: strin
         <div className="h-row">
           <h1>{title}</h1>
           <span className="h-actions">
-            <button type="button" className="explain-btn" onClick={() => setView("explain")}>Explain this page</button>
+            <button type="button" className="explain-btn" onClick={() => setView("explain")}>Explain me this page</button>
             <button type="button" className="explain-btn" onClick={() => setView("playbook")}>Playbook</button>
           </span>
         </div>
