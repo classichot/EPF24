@@ -215,11 +215,21 @@ input[type="range"] { accent-color: var(--color-accent); width: 100%; }
 .brand-mark {
   display: flex;
   align-items: center;
-  gap: 8px;
+  flex-wrap: nowrap;
+  gap: 6px;
   font-family: var(--font-heading);
   font-weight: 800;
   font-size: 30px;
   letter-spacing: -0.03em;
+  line-height: 1;
+}
+.ai-ready {
+  flex: none;
+  border: 1px solid currentColor;
+  padding: 2px 4px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
   line-height: 1;
 }
 .brand-crown {
@@ -279,13 +289,6 @@ input[type="range"] { accent-color: var(--color-accent); width: 100%; }
   font-weight: 800;
   letter-spacing: 0.08em;
   line-height: 1;
-  animation: ai-blink 1.1s steps(2, end) infinite;
-}
-@keyframes ai-blink {
-  50% { opacity: 0.15; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .ai-badge { animation: none; }
 }
 .nav-btn.on {
   background: var(--color-accent);

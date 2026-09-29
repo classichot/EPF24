@@ -247,7 +247,7 @@ export function EpfApp() {
           {collapsed && audience === "advisor" && <Crown />}
           {!collapsed && (
             <div>
-              <div className="brand-mark">{audience === "advisor" && <Crown />}EPF24</div>
+              <div className="brand-mark">{audience === "advisor" && <Crown />}EPF24{llmOn && <span className="ai-ready">AI ready</span>}</div>
               <div className="brand-sub">{agiOn ? "Intelligence and exchange layer" : audience === "advisor" ? "Advisor workspace" : "Employee Provident Fund Intelligence"}</div>
             </div>
           )}
