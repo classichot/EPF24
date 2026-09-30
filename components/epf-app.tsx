@@ -10,6 +10,7 @@ import { CaseControl } from "@/components/case-control";
 import { WorkspaceContext } from "@/components/page-head";
 import { Views, type Api, type Design, type Doc, type Emp } from "@/components/views";
 import { parseSecBook, type SecLiveBook } from "@/lib/sec-book";
+import { REQUIRED_DOCS, ingestComplete, keptDocIds } from "@/lib/doc-guide";
 
 const DOCS: Doc[] = [
   { n: "EPF Management Agreement 2022.pdf", t: "Contract", src: COMPANY.provider, f: "128", s: "Reviewed", d: "14 Aug 2026" },
@@ -63,6 +64,7 @@ export function EpfApp() {
   const [activeId, setActiveId] = useState("rattana");
   const [brief, setBrief] = useState<OpenBrief | null>(null);
   const [docs, setDocs] = useState<Doc[]>(DOCS);
+  const [received, setReceived] = useState<string[]>([]);
   const [reports, setReports] = useState<number[]>([]);
   const [ready, setReady] = useState(false);
   const [closed, setClosed] = useState<Record<string, boolean>>({});
@@ -81,6 +83,8 @@ export function EpfApp() {
       if (raw?.audience === "advisor" || raw?.audience === "corporate") setAudienceState(raw.audience);
       if (raw?.feed === "sec" || raw?.feed === "prototype") setFeed(raw.feed);
       if (raw?.closed && typeof raw.closed === "object") setClosed(raw.closed);
+      const stored = JSON.parse(localStorage.getItem("epf24-ingest") || "[]");
+      if (Array.isArray(stored)) setReceived(keptDocIds(stored.filter((id) => typeof id === "string")));
     } catch { /* ignore */ }
     const book = loadBook();
     setCases(book.cases);
@@ -121,6 +125,11 @@ export function EpfApp() {
     if (!ready) return;
     try { localStorage.setItem("epf24-ui", JSON.stringify({ w: sideW, c: collapsed, theme, agi: agiOn, audience, skin: "console", closed, feed })); } catch { /* ignore */ }
   }, [ready, sideW, collapsed, theme, agiOn, audience, closed, feed]);
+
+  useEffect(() => {
+    if (!ready) return;
+    try { localStorage.setItem("epf24-ingest", JSON.stringify(keptDocIds(received))); } catch { /* ignore */ }
+  }, [ready, received]);
 
   useEffect(() => {
     if (!ready) return;
@@ -251,6 +260,8 @@ export function EpfApp() {
     runMission: () => setMStep(0),
     agi, setAgi: (v) => { setAgi(v); setMStep(-1); },
     docs,
+    received,
+    receiveDoc: (id) => setReceived((ids) => (ids.includes(id) ? ids : [...ids, id])),
     addDoc: () => {
       const n = `Q3 Investment Report ${docs.length}.pdf`;
       setDocs((d) => [{ n, t: "Provider report", src: "HR upload", f: "…", s: "Extracting", d: "23 Sep 2026" }, ...d]);
@@ -339,6 +350,13 @@ export function EpfApp() {
             />
           ) : <div />}
           <div className="top-actions">
+            <button
+              type="button"
+              className={ingestComplete(received) ? "btn btn-secondary" : "btn btn-primary"}
+              onClick={() => goto("docs")}
+            >
+              {ingestComplete(received) ? "Documents" : `Documents needed · ${REQUIRED_DOCS.filter((doc) => received.includes(doc.id)).length} of ${REQUIRED_DOCS.length}`}
+            </button>
             <div className="mode-switch" role="group" aria-label="Prototype or SEC live">
               <button type="button" className={feed === "prototype" ? "on" : ""} onClick={() => setFeed("prototype")}>Prototype</button>
               <button type="button" className={feed === "sec" ? "on" : ""} onClick={() => setFeed("sec")}>SEC live</button>

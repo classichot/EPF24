@@ -62,7 +62,7 @@ const JOB: Partial<Record<ScreenId, string>> = {
   marketplace: "Marketplace. An advisor shelf of providers. Not a ranking by the lowest fee.",
   designer: "EPF Designer. Shape the policy menu and the default. A young member and a member near retirement should not get the same default.",
   switching: "Switching. What a move would involve. It is not a completed switch.",
-  docs: "Documents. The employer file: contract, fee schedule, factsheet, minutes, policy.",
+  docs: "Documents. Five files are required before an employer’s own situation can replace the sample: management agreement, fee schedule, member file, asset report, and investment policy. The header button stays highlighted until all five are marked received, then it becomes an ordinary Documents button. Marking received does not read the file and does not replace the Rattana figures. The lower table is the sample record.",
   gateway: "Public data. SEC and other public sources. Not the employer’s contract.",
   settings: "Admin. Thresholds and settings. Changing a label does not change a calculated result.",
 };

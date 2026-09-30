@@ -6,6 +6,7 @@ import { EasyStart } from "@/components/easy-start";
 import { FeeScreens } from "@/components/fee-views";
 import { FeeAnalysis } from "@/components/fee-analysis";
 import { PageHead as Head } from "@/components/page-head";
+import { REQUIRED_DOCS } from "@/lib/doc-guide";
 import { NetworkScreen } from "@/components/network-view";
 import { SecCompare, SecIntel } from "@/components/sec-screens";
 import { RetirementOutcome } from "@/components/retirement-outcome";
@@ -92,6 +93,8 @@ export type Api = {
   setAgi: (v: "single" | "team" | "swarm") => void;
   docs: Doc[];
   addDoc: () => void;
+  received: string[];
+  receiveDoc: (id: string) => void;
   reports: number[];
   genReport: (i: number) => void;
   audience: "advisor" | "corporate";
@@ -1520,11 +1523,37 @@ function Catalog({
 }
 
 function Docs({ api }: { api: Api }) {
+  const got = REQUIRED_DOCS.filter((doc) => api.received.includes(doc.id)).length;
   return (
     <>
       <Head k="16 — Documents" title="The fund’s document record.">
-        <button className="btn btn-primary" onClick={api.addDoc}>Upload document</button>
+        <button className="btn btn-secondary" onClick={api.addDoc}>Upload document</button>
       </Head>
+      <h6>What EPF24 needs</h6>
+      <p className="muted">
+        These five files are how an employer’s own situation gets onto the file. {got} of {REQUIRED_DOCS.length} are marked received.
+        {got === REQUIRED_DOCS.length
+          ? "The header button is now an ordinary Documents button. The screens still keep the Rattana sample, because marking a file received does not read it and does not replace those figures."
+          : "Until all five are received, the header button stays highlighted and the screens keep the Rattana sample. Marking a file received records that it was supplied. It does not read the file, and it does not replace the sample figures."}
+      </p>
+      <table className="table">
+        <thead><tr><th>Document</th><th>Why EPF24 needs it</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          {REQUIRED_DOCS.map((doc) => {
+            const on = api.received.includes(doc.id);
+            return (
+              <tr key={doc.id}>
+                <td style={{ fontWeight: 600 }}>{doc.name}</td>
+                <td>{doc.why}</td>
+                <td><span className={on ? "tag tag-accent" : "tag tag-outline"}>{on ? "Received" : "Needed"}</span></td>
+                <td>{on ? null : <button className="btn btn-secondary" type="button" onClick={() => api.receiveDoc(doc.id)}>Mark received</button>}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <h6>Sample record</h6>
+      <p className="muted">These rows are the worked sample. They are not an ingest, and they do not turn the header button off.</p>
       <table className="table">
         <thead><tr><th>Document</th><th>Type</th><th>Source</th><th className="num">Fields extracted</th><th>Status</th><th>Added</th></tr></thead>
         <tbody>
