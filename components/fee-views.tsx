@@ -61,7 +61,7 @@ function Xray({ goto }: { goto: (id: ScreenId) => void }) {
           <h6 style={{ margin: 0 }}>Published market lane</h6>
           <p>Not from this contract. The observed comparison case for a best-fit provider is {baht(benchmark)} a year. Do not average it with the negotiated total.</p>
           <p className="muted">Gap between the two lanes: {baht(negotiated - benchmark)} a year.</p>
-          <button className="btn btn-secondary" type="button" onClick={() => goto("feemap")}>Published SEC fees →</button>
+          <button className="btn btn-secondary" type="button" onClick={() => goto("feemap")}>PVD market and negotiated fee →</button>
         </div>
       </div>
       <table className="table">

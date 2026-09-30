@@ -2,159 +2,189 @@
 
 import { useEffect, useState } from "react";
 import { PageHead as Head } from "@/components/page-head";
-import { parseFeeBoard, type FeeBoard, type FeePoint } from "@/lib/sec-fee-board";
+import { FEE_LINES, feeTotal } from "@/lib/fee";
+import { COMPANY, baht, feeLabel } from "@/lib/model";
+import type { PvdCompany, PvdMarket } from "@/lib/sec-pvd-market";
 
-function figure(value: number | null) {
+function million(value: number | null) {
   if (value == null) return "—";
-  return value.toLocaleString("en-US", { maximumFractionDigits: 2 });
+  return value.toLocaleString("en-US", { maximumFractionDigits: 0 });
 }
 
-function Bars({ rows }: { rows: FeePoint[] }) {
-  const max = Math.max(...rows.map((row) => row.median ?? 0), 0);
-  if (!rows.length || max <= 0) return <p className="muted">No published number in this slice.</p>;
+function count(value: number | null) {
+  if (value == null) return "—";
+  return value.toLocaleString("en-US");
+}
+
+function isMarket(body: unknown): body is PvdMarket {
+  if (!body || typeof body !== "object") return false;
+  const row = body as PvdMarket;
+  return typeof row.live === "boolean" && Array.isArray(row.companies) && Array.isArray(row.assets);
+}
+
+function HBars({ rows, value }: { rows: { key: string; label: string; title: string; amount: number }[]; value: (n: number) => string }) {
+  const max = Math.max(...rows.map((row) => row.amount), 0);
+  if (!rows.length || max <= 0) return <p className="muted">No figure in this slice.</p>;
   return (
     <div>
       {rows.map((row) => (
-        <div key={row.label} className="cohort" style={{ gridTemplateColumns: "minmax(120px, 240px) minmax(0, 1fr) 88px" }}>
-          <span style={{ fontWeight: 600 }}>{row.label}</span>
-          <div className="hbar" title={`${row.count.toLocaleString("en-US")} published rows`}>
-            <span style={{ width: `${((row.median ?? 0) / max) * 100}%`, background: "var(--color-accent)" }} />
+        <div key={row.key} className="cohort" style={{ gridTemplateColumns: "minmax(140px, 280px) minmax(0, 1fr) 120px" }}>
+          <span style={{ fontWeight: 600 }} title={row.title}>{row.label}</span>
+          <div className="hbar" title={row.title}>
+            <span style={{ width: `${(row.amount / max) * 100}%`, background: "var(--color-accent)" }} />
           </div>
-          <b className="num">{figure(row.median)}</b>
+          <b className="num">{value(row.amount)}</b>
         </div>
       ))}
     </div>
   );
 }
 
+function companyRows(companies: PvdCompany[]) {
+  const ranked = companies.filter((item) => (item.navMillion ?? 0) > 0);
+  const head = ranked.slice(0, 12);
+  const rest = ranked.slice(12);
+  const rows = head.map((item) => ({
+    key: item.name,
+    label: item.label,
+    title: `${item.name}${item.funds != null ? ` · ${item.funds.toLocaleString("en-US")} funds` : ""}`,
+    amount: item.navMillion ?? 0,
+  }));
+  const other = rest.reduce((sum, item) => sum + (item.navMillion ?? 0), 0);
+  if (other > 0) {
+    rows.push({
+      key: "other",
+      label: "Other management companies",
+      title: `${rest.length.toLocaleString("en-US")} other companies in the same quarter`,
+      amount: other,
+    });
+  }
+  return rows;
+}
+
 export function FeeAnalysis() {
-  const [board, setBoard] = useState<FeeBoard | null>(null);
+  const [market, setMarket] = useState<PvdMarket | null>(null);
   const [state, setState] = useState<"loading" | "ready" | "error">("loading");
-  const [focus, setFocus] = useState("");
   const [tick, setTick] = useState(0);
+  const negotiated = feeTotal(FEE_LINES);
+  const paths = [
+    { id: "hold", label: "No action", amount: COMPANY.annualCost, note: "Keep the current sample contract." },
+    { id: "talk", label: "Renegotiate", amount: COMPANY.annualCost - COMPANY.renegotiateSaving, note: "Ask the incumbent to reprice. Sample case, not a sent offer." },
+    { id: "fit", label: "Best fit", amount: COMPANY.altCost, note: "The sample book’s best-fit cost. Not the cheapest." },
+    { id: "cheap", label: "Cheapest", amount: COMPANY.annualCost - COMPANY.cheapestSaving, note: "Shown so it can be rejected. Cheapest is not best fit." },
+  ];
 
   useEffect(() => {
     let cancel = false;
     setState("loading");
-    fetch("/api/sec/fees")
+    fetch("/api/sec/pvd-market")
       .then((res) => res.json())
       .then((body) => {
         if (cancel) return;
-        const next = parseFeeBoard(body);
-        setBoard(next);
-        setFocus(next?.focus ?? "");
-        setState(next?.live ? "ready" : "error");
+        if (!isMarket(body) || !body.live) {
+          setMarket(isMarket(body) ? body : null);
+          setState("error");
+          return;
+        }
+        setMarket(body);
+        setState("ready");
       })
       .catch(() => {
         if (cancel) return;
-        setBoard(null);
+        setMarket(null);
         setState("error");
       });
     return () => { cancel = true; };
   }, [tick]);
 
-  const cut = board?.cuts.find((item) => item.type === focus) ?? board?.cuts[0];
-  const active = focus || board?.focus || "";
-
   return (
     <>
       <Head
-        k="Fee analysis · SEC"
-        title="Where published fees sit, by company, group, and type."
-        lede="Provident funds only. Each bar is a median of PVD fees the SEC published. Mutual-fund factsheets are not on this page. The employer’s negotiated contract is not in these charts. A lower published fee is not a recommendation to switch."
+        k="Fee analysis · PVD"
+        title="The provident-fund market, and this contract’s fee."
+        lede="The market side is the SEC’s published provident-fund statistics: funds, members, employers, and assets by company. The SEC does not publish the employer’s negotiated fee, so that lane is the sample contract. A lower sample price is not a recommendation to switch."
       />
-      {state === "loading" && <p>Loading published SEC fees.</p>}
-      {state !== "loading" && !board?.live && (
+
+      <h6>Published provident-fund market</h6>
+      {state === "loading" && <p>Loading SEC provident-fund statistics.</p>}
+      {state === "error" && (
         <div className="surface">
-          <p style={{ marginTop: 0 }}>{board?.reason || "Fee analysis could not read the SEC feed. The sample book is not being shown in its place."}</p>
-          {!!board?.attempts.length && (
-            <p className="muted">{board.attempts.map((item) => `${item.path} · ${item.status || "no response"}`).join(" · ")}</p>
-          )}
+          <p style={{ marginTop: 0 }}>{market?.reason || "The SEC provident-fund statistics file did not load. The negotiated fee below is still the sample contract."}</p>
           <button className="btn btn-secondary" type="button" onClick={() => setTick((value) => value + 1)}>Try again</button>
         </div>
       )}
-      {state === "ready" && board?.live && cut && (
+      {state === "ready" && market && (
         <>
-          <p className="muted">{board.lane}{board.read.truncated ? " This view is the first pages of the feed, not every fund." : ""} Figures are shown as published, usually already in percent.</p>
+          <p className="muted">{market.period}{market.asOf ? ` · as of ${market.asOf}` : ""}. Assets are million baht, as published. This is not a fee.</p>
           <div className="stats">
-            <div className="stat"><b style={{ fontSize: 28 }}>{board.read.fees.toLocaleString("en-US")}</b><span className="muted">Fee rows read</span></div>
-            <div className="stat"><b style={{ fontSize: 28 }}>{board.read.funds.toLocaleString("en-US")}</b><span className="muted">Funds on those rows</span></div>
-            <div className="stat"><b style={{ fontSize: 28 }}>{board.read.companies.toLocaleString("en-US")}</b><span className="muted">Companies named</span></div>
-            <div className="stat"><b style={{ fontSize: 28 }}>{figure(board.types.find((type) => type.label === active)?.median ?? null)}</b><span className="muted">{active || "Fee"} median</span></div>
-          </div>
-          <div className="stack">
-            <span className="muted">Fee type</span>
-            <div className="chips">
-              {board.types.map((type) => (
-                <button key={type.label} className={type.label === active ? "chip on" : "chip"} type="button" onClick={() => setFocus(type.label)}>
-                  {type.label}
-                </button>
-              ))}
-            </div>
+            <div className="stat"><b style={{ fontSize: 28 }}>{count(market.funds)}</b><span className="muted">Provident funds</span></div>
+            <div className="stat"><b style={{ fontSize: 28 }}>{count(market.members)}</b><span className="muted">Members</span></div>
+            <div className="stat"><b style={{ fontSize: 28 }}>{count(market.employers)}</b><span className="muted">Employers</span></div>
+            <div className="stat"><b style={{ fontSize: 28 }}>{million(market.navMillion)}</b><span className="muted">Net assets, million baht</span></div>
           </div>
           <div className="split">
             <div>
-              <h6>By company · {active}</h6>
-              <Bars rows={cut.byAmc} />
-              {!cut.byAmc.length && <p className="muted">These rows did not name a management company.</p>}
+              <h6>Assets by management company</h6>
+              <HBars rows={companyRows(market.companies)} value={(n) => million(n)} />
+              <p className="muted">Longer means more published assets in this quarter, not a lower fee and not a better fit.</p>
             </div>
             <div>
-              <h6>By investment group · {active}</h6>
-              <Bars rows={cut.byGroup} />
-              {!cut.byGroup.length && <p className="muted">These rows did not name a policy group.</p>}
+              <h6>Where those assets sit</h6>
+              <HBars
+                rows={market.assets.map((item) => ({ key: item.label, label: item.label, title: item.label, amount: item.navMillion }))}
+                value={(n) => million(n)}
+              />
+              {market.liabilitiesMillion != null && (
+                <p className="muted">Other liabilities in the same quarter were {million(market.liabilitiesMillion)} million baht. They are deducted in the published net asset value.</p>
+              )}
             </div>
-          </div>
-          <h6>By fee type</h6>
-          <div className="bars" style={{ height: 180 }}>
-            {board.types.map((type) => {
-              const max = Math.max(...board.types.map((item) => item.median ?? 0), 0.01);
-              return (
-                <i
-                  key={type.label}
-                  title={`${type.label} ${figure(type.median)}`}
-                  style={{ height: `${((type.median ?? 0) / max) * 100}%`, background: type.label === active ? "var(--color-accent)" : "var(--color-neutral-400)" }}
-                />
-              );
-            })}
-          </div>
-          <div style={{ display: "flex", gap: 6, marginBottom: 18 }}>
-            {board.types.map((type) => (
-              <span key={type.label} style={{ flex: 1 }} className="muted">{type.label}</span>
-            ))}
-          </div>
-          {!!board.matrix.length && (
-            <>
-              <h6>Group by type</h6>
-              <p className="muted">Each cell is the median published figure, then the number of rows. Empty means that pair was not on this page.</p>
-              <div className="scroll">
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th>Group</th>
-                      {board.matrix[0].cells.map((cell) => <th key={cell.type} className="num">{cell.type}</th>)}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {board.matrix.map((row) => (
-                      <tr key={row.group}>
-                        <td style={{ fontWeight: 600 }}>{row.group}</td>
-                        {row.cells.map((cell) => (
-                          <td key={cell.type} className="num">{cell.count ? `${figure(cell.median)} · ${cell.count}` : "—"}</td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )}
-          <div className="trust">
-            <span>{board.reason}</span>
-            <span>{board.read.matched.toLocaleString("en-US")} fee rows carried a company name or matched a fund record.</span>
-            <span>The Rattana contract stays on Fee X-Ray. It is not a bar on this page.</span>
           </div>
         </>
       )}
+
+      <h6>Negotiated fee · sample contract</h6>
+      <p className="muted">
+        {COMPANY.name} · {COMPANY.provider} · {feeLabel(COMPANY.feeRate)} all-in · {baht(negotiated)} a year.
+        This is the private sample file. It is not an SEC published fee, and it is not added to the market assets above.
+      </p>
+      <div className="scroll">
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Line</th>
+              <th className="num">Negotiated</th>
+              <th className="num">Best-fit case</th>
+              <th className="num">Gap</th>
+            </tr>
+          </thead>
+          <tbody>
+            {FEE_LINES.map((line) => (
+              <tr key={line.id}>
+                <td style={{ fontWeight: 600 }}>{line.name}</td>
+                <td className="num">{baht(line.amount)}</td>
+                <td className="num">{baht(line.benchmark)}</td>
+                <td className="num">{baht(line.saving)}</td>
+              </tr>
+            ))}
+            <tr>
+              <td style={{ fontWeight: 600 }}>All-in</td>
+              <td className="num">{baht(negotiated)}</td>
+              <td className="num">{baht(COMPANY.altCost)}</td>
+              <td className="num">{baht(negotiated - COMPANY.altCost)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <h6>What the sample book can do next</h6>
+      <HBars
+        rows={paths.map((item) => ({ key: item.id, label: item.label, title: item.note, amount: item.amount }))}
+        value={(n) => baht(n)}
+      />
+      <p className="muted">Longer means a higher annual cost in the sample book. No action keeps the current contract. Cheapest is not best fit.</p>
+      <div className="trust">
+        <span>{market?.source || "Negotiated figures are the Rattana sample file. They are not an SEC fee."}</span>
+        <span>The line-by-line clauses stay on Fee X-Ray.</span>
+      </div>
     </>
   );
 }

@@ -50,27 +50,27 @@ const HOME = g({
 });
 
 const GUIDES: { title: string; guide: Guide }[] = [
-  { title: "Where published fees sit, by company, group, and type.", guide: g({
+  { title: "The provident-fund market, and this contract’s fee.", guide: g({
     code: "FA",
     name: "Fee analysis",
-    summary: "See published provident-fund fees by management company, investment group, and fee type.",
-    when: "Use Fee analysis when the question is where a published PVD fee sits, not a mutual-fund factsheet and not what this employer’s contract charges.",
-    need: "Nothing from the employer file. The page reads the SEC provident-fund fee file on the server. Mutual-fund factsheets are out of scope.",
-    leave: "A median by company, by group, and by type, plus the group-by-type table. A lower number is not a decision to switch.",
+    summary: "Read the SEC’s published provident-fund market, then the sample contract’s negotiated fee, as two lanes.",
+    when: "Use Fee analysis when the question is the size of the provident-fund market, or what this employer’s sample contract costs against the sample book.",
+    need: "The market side needs the SEC statistics file. The fee side needs the open sample contract. A mutual-fund factsheet is not used. The SEC fee API is not used.",
+    leave: "Market counts and assets by company, plus the negotiated lines and four sample next steps: no action, renegotiate, best fit, and cheapest.",
     features: [
-      { title: "By company", body: "The median published figure for the fee type you select, for each company named on this page." },
-      { title: "By group", body: "The same fee type, split by investment policy such as equity, fixed income, or mixed." },
-      { title: "By type", body: "Management, trustee, registrar, total expense, and the other types the feed actually returned." },
-      { title: "Group by type", body: "One cell for each group and fee type: the median, then how many rows it came from." },
+      { title: "Published market", body: "Funds, members, employers, and net assets for the latest quarter the SEC statistics file contains." },
+      { title: "By company", body: "Published assets of each management company. Longer is more assets, not a lower fee." },
+      { title: "Where assets sit", body: "Listed, unlisted domestic, foreign, and other assets from the same quarter." },
+      { title: "Negotiated fee", body: "The sample contract by line, beside the best-fit case. It is not an SEC published fee." },
     ],
-    before: "Keep the contract on Fee X-Ray. Do not paste a factsheet median into the negotiated total.",
+    before: "Do not paste a market asset figure into the negotiated total. Do not treat cheapest as the recommendation.",
     steps: [
-      { title: "Choose a fee type", body: "Total expense and management are the usual starting points when the feed has them." },
-      { title: "Read the company bars", body: "Longer means a higher published median, not a better fund." },
-      { title: "Read the group bars", body: "Compare equity with equity. A money-market fee is not a peer for an equity fee." },
-      { title: "Use the table for the cross", body: "A cell with few rows is a thin slice. Do not treat it as the market." },
+      { title: "Read the market counts", body: "These are published provident-fund statistics. They are not fees." },
+      { title: "Read assets by company", body: "This is where the industry’s assets sit. It does not say what an employer negotiated." },
+      { title: "Read the contract lines", body: "The baht figures are the sample file. The clauses stay on Fee X-Ray." },
+      { title: "Read the next steps", body: "No action keeps the current price. Renegotiate, best fit, and cheapest are sample cases. Cheapest is not best fit." },
     ],
-    outcome: "A sourced picture of published fees, with the employer contract still in its own lane.",
+    outcome: "A sourced picture of the provident-fund market, with this employer’s negotiated fee still in its own lane.",
     related: [
       { id: "xray", label: "Fee X-Ray" },
       { id: "compare", label: "Provider comparison" },
