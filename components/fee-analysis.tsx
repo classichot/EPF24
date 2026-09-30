@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { PageHead as Head } from "@/components/page-head";
-import { FEE_LINES, feeTotal } from "@/lib/fee";
+import { FEE_LINES, feeTotal, reversedRate } from "@/lib/fee";
 import { COMPANY, baht, feeLabel } from "@/lib/model";
 import type { PvdCompany, PvdMarket } from "@/lib/sec-pvd-market";
 
@@ -67,6 +67,8 @@ export function FeeAnalysis() {
   const [state, setState] = useState<"loading" | "ready" | "error">("loading");
   const [tick, setTick] = useState(0);
   const negotiated = feeTotal(FEE_LINES);
+  const registrar = FEE_LINES.find((line) => line.id === "reg");
+  const perMember = registrar ? registrar.amount / COMPANY.members : null;
   const paths = [
     { id: "hold", label: "No action", amount: COMPANY.annualCost, note: "Keep the current sample contract." },
     { id: "talk", label: "Renegotiate", amount: COMPANY.annualCost - COMPANY.renegotiateSaving, note: "Ask the incumbent to reprice. Sample case, not a sent offer." },
@@ -153,7 +155,9 @@ export function FeeAnalysis() {
             <tr>
               <th>Line</th>
               <th className="num">Negotiated</th>
+              <th className="num">Rate</th>
               <th className="num">Best-fit case</th>
+              <th className="num">Rate</th>
               <th className="num">Gap</th>
             </tr>
           </thead>
@@ -162,18 +166,40 @@ export function FeeAnalysis() {
               <tr key={line.id}>
                 <td style={{ fontWeight: 600 }}>{line.name}</td>
                 <td className="num">{baht(line.amount)}</td>
+                <td className="num">{feeLabel(reversedRate(line.amount))}</td>
                 <td className="num">{baht(line.benchmark)}</td>
+                <td className="num">{feeLabel(reversedRate(line.benchmark))}</td>
                 <td className="num">{baht(line.saving)}</td>
               </tr>
             ))}
             <tr>
               <td style={{ fontWeight: 600 }}>All-in</td>
               <td className="num">{baht(negotiated)}</td>
+              <td className="num">{feeLabel(reversedRate(negotiated))}</td>
               <td className="num">{baht(COMPANY.altCost)}</td>
+              <td className="num">{feeLabel(reversedRate(COMPANY.altCost))}</td>
               <td className="num">{baht(negotiated - COMPANY.altCost)}</td>
             </tr>
           </tbody>
         </table>
+      </div>
+      <div className="surface">
+        <h6 style={{ marginTop: 0 }}>How this rate is calculated</h6>
+        <p>
+          The rate is annual baht from the sample contract divided by this employer’s assets, {baht(COMPANY.aum)}.
+          The industry assets in the chart above are a different total. They are not the divisor.
+        </p>
+        <p>
+          All-in: {baht(negotiated)} ÷ {baht(COMPANY.aum)} = {feeLabel(reversedRate(negotiated))}.
+          {registrar && perMember != null && (
+            <> Registrar: {baht(perMember)} × {COMPANY.members.toLocaleString("en-US")} members = {baht(registrar.amount)}. {baht(registrar.amount)} ÷ {baht(COMPANY.aum)} = {feeLabel(reversedRate(registrar.amount))}.</>
+          )}
+          {" "}Every rate in the table uses that same division.
+        </p>
+        <p className="muted" style={{ marginBottom: 0 }}>
+          A quartile is the 25th and the 75th rate in a sorted list of employer rates. This sample has one employer, so it has one all-in rate.
+          The SEC statistics file records assets and members. It does not record annual fee baht, so those rows stay out of the list.
+        </p>
       </div>
       <h6>What the sample book can do next</h6>
       <HBars

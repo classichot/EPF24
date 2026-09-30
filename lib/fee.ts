@@ -35,6 +35,11 @@ export function trueCost(total = feeTotal(NEGOTIATED_FEES), members = COMPANY.me
   };
 }
 
+/** Annual baht divided by this employer's assets. The industry asset total is not the divisor. */
+export function reversedRate(amount: number, aum = COMPANY.aum) {
+  return amount / aum;
+}
+
 export function projectFees(rate: number, years: number, growth: number, aum = COMPANY.aum) {
   let assets = aum;
   const yearsCosts: number[] = [];
