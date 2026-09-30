@@ -87,36 +87,26 @@ export async function loadFeeBoard(): Promise<FeeBoard> {
   if (cache && Date.now() - cache.at < TTL_MS) return cache.board;
   const creds = credentials();
   if (!creds.ready) {
-    return empty("The SEC key is not on this server. Fee analysis is not showing the sample book in its place.", []);
+    return empty("The SEC key is not on this server. Fee analysis is provident funds only and is not showing mutual funds or the sample book.", []);
   }
 
   const attempts: { path: string; status: number }[] = [];
-  const candidates = [
-    { path: "/v1/pvd/fund-fee?page_size=100", lane: "SEC provident-fund fee file. These are published fees, not an employer’s negotiated contract.", funds: "/v1/pvd/general-info/fund-info?page_size=100", companies: "/v1/pvd/general-info/list?page_size=100" },
-    { path: "/v2/fund/factsheet/fees?latest=true&page_size=100", lane: "SEC mutual-fund factsheet fees. This is the published fund market, not a provident-fund contract and not the employer’s negotiated fee.", funds: "/v2/fund/general-info/profiles?fund_status=Registered&page_size=100", companies: "/v2/fund/general-info/amcs?page_size=100" },
-  ];
-
-  let chosen: (typeof candidates)[number] | null = null;
-  let fees = { status: 0, rows: [] as Record<string, unknown>[], truncated: false };
-  for (const candidate of candidates) {
-    const first = await pull(candidate.path);
-    attempts.push({ path: candidate.path.split("?")[0], status: first.status });
-    if (first.status === 200 && first.rows.length > 0) {
-      chosen = candidate;
-      fees = first;
-      break;
-    }
-  }
-  if (!chosen) {
-    return empty("SEC answered, but neither the provident-fund fee path nor the fund factsheet fee path returned rows.", attempts);
+  const feesPath = "/v1/pvd/fund-fee?page_size=100";
+  const companiesPath = "/v1/pvd/general-info/list?page_size=100";
+  const fundsPath = "/v1/pvd/general-info/fund-info?page_size=100";
+  const lane = "SEC provident-fund fees only. Mutual-fund factsheets are not included. These published fees are not an employer’s negotiated contract.";
+  const fees = await pull(feesPath);
+  attempts.push({ path: feesPath.split("?")[0], status: fees.status });
+  if (!(fees.status === 200 && fees.rows.length > 0)) {
+    return empty("Fee analysis is provident funds only. The SEC provident-fund fee file did not return rows, so this page has no chart. Mutual-fund factsheets are not used.", attempts);
   }
 
   const [companies, funds] = await Promise.all([
-    pull(chosen.companies).catch(() => ({ status: 0, rows: [] as Record<string, unknown>[], truncated: false })),
-    pull(chosen.funds).catch(() => ({ status: 0, rows: [] as Record<string, unknown>[], truncated: false })),
+    pull(companiesPath).catch(() => ({ status: 0, rows: [] as Record<string, unknown>[], truncated: false })),
+    pull(fundsPath).catch(() => ({ status: 0, rows: [] as Record<string, unknown>[], truncated: false })),
   ]);
-  attempts.push({ path: chosen.companies.split("?")[0], status: companies.status });
-  attempts.push({ path: chosen.funds.split("?")[0], status: funds.status });
+  attempts.push({ path: companiesPath.split("?")[0], status: companies.status });
+  attempts.push({ path: fundsPath.split("?")[0], status: funds.status });
 
   const amcName = new Map<string, string>();
   companies.rows.forEach((row) => {
@@ -149,7 +139,7 @@ export async function loadFeeBoard(): Promise<FeeBoard> {
   });
 
   const board = buildFeeBoard(observations, {
-    lane: chosen.lane,
+    lane,
     truncated: fees.truncated || companies.truncated || funds.truncated,
     attempts,
     companies: amcName.size,

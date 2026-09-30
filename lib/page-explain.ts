@@ -53,9 +53,9 @@ const GUIDES: { title: string; guide: Guide }[] = [
   { title: "Where published fees sit, by company, group, and type.", guide: g({
     code: "FA",
     name: "Fee analysis",
-    summary: "See published SEC fees by management company, investment group, and fee type.",
-    when: "Use Fee analysis when the question is where a published fee sits in the market, not what this employer’s contract charges.",
-    need: "Nothing from the employer file. The page reads the SEC feed on the server.",
+    summary: "See published provident-fund fees by management company, investment group, and fee type.",
+    when: "Use Fee analysis when the question is where a published PVD fee sits, not a mutual-fund factsheet and not what this employer’s contract charges.",
+    need: "Nothing from the employer file. The page reads the SEC provident-fund fee file on the server. Mutual-fund factsheets are out of scope.",
     leave: "A median by company, by group, and by type, plus the group-by-type table. A lower number is not a decision to switch.",
     features: [
       { title: "By company", body: "The median published figure for the fee type you select, for each company named on this page." },

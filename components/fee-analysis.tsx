@@ -61,7 +61,7 @@ export function FeeAnalysis() {
       <Head
         k="Fee analysis · SEC"
         title="Where published fees sit, by company, group, and type."
-        lede="Each bar is a median of figures the SEC published. The employer’s negotiated contract is not in these charts. A lower published fee is not a recommendation to switch."
+        lede="Provident funds only. Each bar is a median of PVD fees the SEC published. Mutual-fund factsheets are not on this page. The employer’s negotiated contract is not in these charts. A lower published fee is not a recommendation to switch."
       />
       {state === "loading" && <p>Loading published SEC fees.</p>}
       {state !== "loading" && !board?.live && (
