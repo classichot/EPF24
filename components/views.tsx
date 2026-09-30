@@ -4,6 +4,7 @@ import { useState } from "react";
 import { WorkspacePage } from "@/components/case-control";
 import { EasyStart } from "@/components/easy-start";
 import { FeeScreens } from "@/components/fee-views";
+import { FeeAnalysis } from "@/components/fee-analysis";
 import { PageHead as Head } from "@/components/page-head";
 import { NetworkScreen } from "@/components/network-view";
 import { SecCompare, SecIntel } from "@/components/sec-screens";
@@ -151,6 +152,7 @@ function Seg({
 export function Views({ s, api }: { s: ScreenId; api: Api }) {
   const moat = MoatScreens({ s, goto: api.goto });
   if (moat) return moat;
+  if (s === "feemap") return <FeeAnalysis />;
   const fee = FeeScreens({ s, goto: api.goto });
   if (fee) return fee;
   if (s === "workspace") return <WorkspacePage />;

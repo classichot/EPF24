@@ -50,6 +50,33 @@ const HOME = g({
 });
 
 const GUIDES: { title: string; guide: Guide }[] = [
+  { title: "Where published fees sit, by company, group, and type.", guide: g({
+    code: "FA",
+    name: "Fee analysis",
+    summary: "See published SEC fees by management company, investment group, and fee type.",
+    when: "Use Fee analysis when the question is where a published fee sits in the market, not what this employer’s contract charges.",
+    need: "Nothing from the employer file. The page reads the SEC feed on the server.",
+    leave: "A median by company, by group, and by type, plus the group-by-type table. A lower number is not a decision to switch.",
+    features: [
+      { title: "By company", body: "The median published figure for the fee type you select, for each company named on this page." },
+      { title: "By group", body: "The same fee type, split by investment policy such as equity, fixed income, or mixed." },
+      { title: "By type", body: "Management, trustee, registrar, total expense, and the other types the feed actually returned." },
+      { title: "Group by type", body: "One cell for each group and fee type: the median, then how many rows it came from." },
+    ],
+    before: "Keep the contract on Fee X-Ray. Do not paste a factsheet median into the negotiated total.",
+    steps: [
+      { title: "Choose a fee type", body: "Total expense and management are the usual starting points when the feed has them." },
+      { title: "Read the company bars", body: "Longer means a higher published median, not a better fund." },
+      { title: "Read the group bars", body: "Compare equity with equity. A money-market fee is not a peer for an equity fee." },
+      { title: "Use the table for the cross", body: "A cell with few rows is a thin slice. Do not treat it as the market." },
+    ],
+    outcome: "A sourced picture of published fees, with the employer contract still in its own lane.",
+    related: [
+      { id: "xray", label: "Fee X-Ray" },
+      { id: "compare", label: "Provider comparison" },
+      { id: "gap", label: "Value Gap" },
+    ],
+  }) },
   { title: "Pay less. Earn more.", guide: g({
     code: "02",
     name: "My EPF",

@@ -35,7 +35,8 @@ export type ScreenId =
   | "gateway"
   | "start"
   | "workspace"
-  | "quality";
+  | "quality"
+  | "feemap";
 
 export type Audience = "advisor" | "corporate";
 
@@ -53,6 +54,7 @@ export const NAV: { id: ScreenId; label: string; group: "desk" | "board" | "inte
   { id: "mission", label: "AGI Mission", group: "board", agi: true, llm: true },
   { id: "cio", label: "Autonomous CIO", group: "board", agi: true, llm: true },
   { id: "quality", label: "Retirement outcome", group: "intel", llm: true },
+  { id: "feemap", label: "Fee analysis", group: "intel" },
   { id: "intel", label: "PVD Market", group: "intel", audience: "advisor" },
   { id: "network", label: "Intelligence network", group: "intel", audience: "advisor" },
   { id: "employers", label: "Employers", group: "intel", audience: "advisor" },

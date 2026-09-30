@@ -7,7 +7,7 @@ import { FEE_LINES, feeScenario, feeTotal, projectFees, savingsMeter, trueCost }
 
 export function FeeScreens({ s, goto }: { s: ScreenId; goto: (id: ScreenId) => void }) {
   if (s === "mypvd") return <MyPvd goto={goto} />;
-  if (s === "xray") return <Xray />;
+  if (s === "xray") return <Xray goto={goto} />;
   if (s === "lab") return <Lab />;
   if (s === "gateway") return <Gateway />;
   return null;
@@ -43,7 +43,7 @@ function MyPvd({ goto }: { goto: (id: ScreenId) => void }) {
   );
 }
 
-function Xray() {
+function Xray({ goto }: { goto: (id: ScreenId) => void }) {
   const [open, setOpen] = useState<string | null>(FEE_LINES[0].id);
   const cost = trueCost();
   const negotiated = feeTotal(FEE_LINES);
@@ -61,6 +61,7 @@ function Xray() {
           <h6 style={{ margin: 0 }}>Published market lane</h6>
           <p>Not from this contract. The observed comparison case for a best-fit provider is {baht(benchmark)} a year. Do not average it with the negotiated total.</p>
           <p className="muted">Gap between the two lanes: {baht(negotiated - benchmark)} a year.</p>
+          <button className="btn btn-secondary" type="button" onClick={() => goto("feemap")}>Published SEC fees →</button>
         </div>
       </div>
       <table className="table">

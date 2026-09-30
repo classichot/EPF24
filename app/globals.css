@@ -1011,6 +1011,7 @@ div.nav-group:hover { opacity: 0.7; color: inherit; }
   border-bottom: 1px solid var(--color-divider);
 }
 .hbar { height: 16px; background: var(--color-neutral-200); display: flex; }
+.hbar > span { display: block; height: 100%; }
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
 .card {
   background: var(--color-surface);
