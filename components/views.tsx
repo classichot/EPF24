@@ -6,10 +6,12 @@ import { EasyStart } from "@/components/easy-start";
 import { FeeScreens } from "@/components/fee-views";
 import { PageHead as Head } from "@/components/page-head";
 import { NetworkScreen } from "@/components/network-view";
+import { SecCompare, SecIntel } from "@/components/sec-screens";
 import { RetirementOutcome } from "@/components/retirement-outcome";
 import { headlineRva } from "@/lib/retirement-outcome";
 import { MoatScreens } from "@/components/moat-views";
 import { PVD_EMPLOYERS, PVD_MANAGERS, PVD_PRODUCTS } from "@/lib/pvd-funds";
+import type { SecLiveBook } from "@/lib/sec-book";
 import { CATALOG_CATEGORIES, CATALOG_MISSIONS, ENTRY_MISSIONS } from "@/lib/catalog";
 import { ENGINES, agiSteps, agiVerdict } from "@/lib/moat";
 import {
@@ -92,6 +94,9 @@ export type Api = {
   reports: number[];
   genReport: (i: number) => void;
   audience: "advisor" | "corporate";
+  feed: "prototype" | "sec";
+  sec: SecLiveBook | null;
+  secState: "idle" | "loading" | "ready" | "error";
 };
 
 export type Emp = {
@@ -151,10 +156,10 @@ export function Views({ s, api }: { s: ScreenId; api: Api }) {
   if (s === "workspace") return <WorkspacePage />;
   if (s === "start") return <EasyStart />;
   if (s === "home") return <Home api={api} />;
-  if (s === "intel") return <Intel api={api} />;
-  if (s === "network") return <NetworkScreen goto={api.goto} />;
+  if (s === "intel") return api.feed === "sec" ? <SecIntel api={api} /> : <Intel api={api} />;
+  if (s === "network") return <NetworkScreen goto={api.goto} feed={api.feed} sec={api.sec} secState={api.secState} />;
   if (s === "employers") return <Employers />;
-  if (s === "compare") return <Compare api={api} />;
+  if (s === "compare") return api.feed === "sec" ? <SecCompare api={api} /> : <Compare api={api} />;
   if (s === "bench") return <Bench api={api} />;
   if (s === "gap") return <Gap api={api} />;
   if (s === "market") return <Market api={api} />;

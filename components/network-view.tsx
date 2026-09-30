@@ -5,9 +5,21 @@ import { PageHead as Head } from "@/components/page-head";
 import { COMPANY, baht, feeLabel, type ScreenId } from "@/lib/model";
 import { fairPriceQuote } from "@/lib/moat";
 import { NETWORK_LAYERS, SEC_CATALOG, epfScores, sampleFundIntelligence } from "@/lib/network";
-import { CANONICAL_CHAIN, DATA_TIERS, PIPELINE, RAW_STORE, SEC_PVD_DATASETS } from "@/lib/sec-pvd";
+import { CANONICAL_CHAIN, DATA_TIERS, PIPELINE, RAW_STORE, SEC_PVD_DATASETS, datasetPath } from "@/lib/sec-pvd";
+import type { SecLiveBook } from "@/lib/sec-book";
+import { SecTable } from "@/components/sec-table";
 
-export function NetworkScreen({ goto }: { goto: (id: ScreenId) => void }) {
+export function NetworkScreen({
+  goto,
+  feed = "prototype",
+  sec = null,
+  secState = "idle",
+}: {
+  goto: (id: ScreenId) => void;
+  feed?: "prototype" | "sec";
+  sec?: SecLiveBook | null;
+  secState?: "idle" | "loading" | "ready" | "error";
+}) {
   const intel = sampleFundIntelligence();
   const scores = epfScores();
   const fair = fairPriceQuote(COMPANY.aum);
@@ -78,7 +90,7 @@ export function NetworkScreen({ goto }: { goto: (id: ScreenId) => void }) {
               <tr key={dataset.id}>
                 <td style={{ fontWeight: 600 }}>{dataset.id} · {dataset.name}</td>
                 <td>{dataset.use}</td>
-                <td>Path not pinned</td>
+                <td>{datasetPath(dataset.id) ? "Path pinned" : "Path not pinned"}</td>
               </tr>
             ))}
           </tbody>
@@ -96,8 +108,22 @@ export function NetworkScreen({ goto }: { goto: (id: ScreenId) => void }) {
           ))}
         </tbody>
       </table>
+      {feed === "sec" ? (
+        <>
+          <h6>SEC live</h6>
+          {secState === "ready" && sec?.live ? (
+            <>
+              <p className="muted">These rows are the first page of SEC Open Data. The sample fund below stays the private file.</p>
+              <SecTable title="Published fees" slice={sec.fees} />
+              <SecTable title="Published performance" slice={sec.performance} />
+            </>
+          ) : (
+            <p className="muted">{sec?.reason || (secState === "loading" ? "Loading the first page of SEC Open Data." : "SEC live did not return published rows. The sample fund below is not being labeled as SEC data.")}</p>
+          )}
+        </>
+      ) : null}
       <h6>Sample fund · {fund.name}</h6>
-      <p className="muted">Schema: Fund → Policy → Manager → Return → Fee → Risk. Manager names are from the SEC PVD list. Returns and fees in this table are a mock sample, because the SEC subscription is not connected.</p>
+      <p className="muted">Schema: Fund → Policy → Manager → Return → Fee → Risk. Manager names are from the SEC PVD list. Returns and fees in this table are the sample book. SEC live, in the header, loads published rows separately.</p>
       <div className="stats">
         <div className="stat"><span className="muted">5Y return</span><b>{fund.r5.toFixed(1)}%</b><span className="muted">Peer median {intel.peerReturn.toFixed(1)}%</span></div>
         <div className="stat"><span className="muted">All-in fee</span><b>{feeLabel(fund.fee)}</b><span className="muted">Peer median {feeLabel(intel.peerFee)}</span></div>
@@ -120,20 +146,20 @@ export function NetworkScreen({ goto }: { goto: (id: ScreenId) => void }) {
       </table>
       <div className="ink">
         <span className="eyebrow">EPF24 analysis · not an SEC sentence</span>
-        <span>{intel.analysis} For {COMPANY.name}, the negotiated cost is {baht(COMPANY.annualCost)} a year against a best-fit cost of {baht(COMPANY.altCost)}. The fee difference is {baht(COMPANY.feeSaving)} a year. The 10-year member wealth difference on the stated return assumptions is {baht(intel.ten)}. SEC factsheets are not loaded, so this is not an SEC comparison.</span>
+        <span>{intel.analysis} For {COMPANY.name}, the negotiated cost is {baht(COMPANY.annualCost)} a year against a best-fit cost of {baht(COMPANY.altCost)}. The fee difference is {baht(COMPANY.feeSaving)} a year. The 10-year member wealth difference on the stated return assumptions is {baht(intel.ten)}. {feed === "sec" && sec?.live ? "That comparison is the sample file, not the SEC rows above." : "This block is the sample file, not an SEC comparison."}</span>
       </div>
       <h6>Savings and return opportunity · {COMPANY.name}</h6>
-      <p className="muted">{COMPANY.members.toLocaleString("en-US")} employees · {baht(COMPANY.aum)} assets · current provider {COMPANY.provider}. SEC historical returns and published fees are not loaded. The lines below are the sample file and EPF24 calculations.</p>
+      <p className="muted">{COMPANY.members.toLocaleString("en-US")} employees · {baht(COMPANY.aum)} assets · current provider {COMPANY.provider}. {feed === "sec" && sec?.live ? "Published SEC rows are above. The lines below stay the employer sample file." : "The lines below are the sample file and EPF24 calculations."}</p>
       <div className="stats">
         <div className="stat"><span className="muted">Current annual fund cost</span><b>{baht(COMPANY.annualCost)}</b><span className="muted">Corporate private data · negotiated contract</span></div>
         <div className="stat"><span className="muted">Comparable lower-cost option</span><b>{baht(COMPANY.altCost)}</b><span className="muted">EPF24 calculation · sample book, not an SEC fee</span></div>
         <div className="stat"><span className="muted">Potential cost difference</span><b>{baht(COMPANY.feeSaving)}/year</b><span className="muted">EPF24 calculation</span></div>
-        <div className="stat"><span className="muted">Current vs comparable 5Y</span><b>{(COMPANY.netReturn * 100).toFixed(1)}% → {(COMPANY.altReturn * 100).toFixed(1)}%</b><span className="muted">Sample-book assumptions · SEC series not loaded</span></div>
+        <div className="stat"><span className="muted">Current vs comparable 5Y</span><b>{(COMPANY.netReturn * 100).toFixed(1)}% → {(COMPANY.altReturn * 100).toFixed(1)}%</b><span className="muted">Sample-book assumptions</span></div>
         <div className="stat"><span className="muted">10-year member wealth difference</span><b>{baht(intel.ten)}</b><span className="muted">EPF24 calculation on those return assumptions</span></div>
       </div>
       <div className="ink">
         <span className="eyebrow">Opportunity · not an SEC sentence</span>
-        <span>EPF24 detected an estimated {baht(COMPANY.annualValue)} annual economic improvement on the sample book: {baht(COMPANY.feeSaving)} of employer fee difference and {baht(COMPANY.investOpp)} of member wealth scenario. SEC support is not loaded. The drivers are the fee gap and the stated return gap. The alternative is the best-fit sample provider, not the cheapest. The risk is that a negotiated fee and a published fee are different. The mission is to test or reprice, or to record that the current arrangement stays.</span>
+        <span>EPF24 detected an estimated {baht(COMPANY.annualValue)} annual economic improvement on the sample book: {baht(COMPANY.feeSaving)} of employer fee difference and {baht(COMPANY.investOpp)} of member wealth scenario. The drivers are the fee gap and the stated return gap. The alternative is the best-fit sample provider, not the cheapest. The risk is that a negotiated fee and a published fee are different. The mission is to test or reprice, or to record that the current arrangement stays.</span>
       </div>
       <h6>Fair Fee · {COMPANY.name}</h6>
       <div className="stats">

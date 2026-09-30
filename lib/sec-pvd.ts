@@ -26,8 +26,27 @@ export const SEC_PVD_DATASETS: { id: string; name: string; use: string; entity: 
   { id: "15", name: "Monthly NAV by sub-policy", use: "Time series", entity: "nav" },
 ];
 
-/** Filled from the current portal. Null means sync stays off for that dataset. */
-const DATASET_PATHS: Record<string, string | null> = Object.fromEntries(SEC_PVD_DATASETS.map((dataset) => [dataset.id, null]));
+/**
+ * Pinned from the SEC PVD v1 list. 09–15 stay empty: those catalog names
+ * (statistics, top-5 holdings, monthly NAV) are not these endpoints.
+ */
+const DATASET_PATHS: Record<string, string | null> = {
+  "01": "/v1/pvd/general-info/list",
+  "02": "/v1/pvd/general-info/fund-info",
+  "03": "/v1/pvd/general-info/fund-spec",
+  "04": "/v1/pvd/fund-policy",
+  "05": "/v1/pvd/fund-performance",
+  "06": "/v1/pvd/fund-benchmark",
+  "07": "/v1/pvd/fund-fee",
+  "08": "/v1/pvd/fund-asset",
+  "09": null,
+  "10": null,
+  "11": null,
+  "12": null,
+  "13": null,
+  "14": null,
+  "15": null,
+};
 
 export const PIPELINE = [
   "SEC PVD API",

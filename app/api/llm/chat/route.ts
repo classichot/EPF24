@@ -8,7 +8,7 @@ function readContext(value: unknown): ChatContext {
   const raw = value && typeof value === "object" ? (value as Record<string, unknown>) : {};
   const screen = typeof raw.screen === "string" && isScreenId(raw.screen) ? raw.screen : "start";
   const audience = raw.audience === "advisor" ? "advisor" : "corporate";
-  return { screen, audience, agi: raw.agi === true };
+  return { screen, audience, agi: raw.agi === true, secLive: raw.secLive === true };
 }
 
 function readTurns(value: unknown): Turn[] {

@@ -31,11 +31,13 @@ export function AiChat({
   audience,
   agiOn,
   llmOn,
+  secLive,
 }: {
   screen: ScreenId;
   audience: Audience;
   agiOn: boolean;
   llmOn: boolean;
+  secLive: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [goal, setGoal] = useState<ChatGoal>("guide");
@@ -82,7 +84,7 @@ export function AiChat({
         body: JSON.stringify({
           goal,
           messages: history.slice(-8),
-          context: { screen, audience, agi: agiOn },
+          context: { screen, audience, agi: agiOn, secLive },
         }),
       });
       const data = await res.json();

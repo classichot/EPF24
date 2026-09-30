@@ -148,8 +148,8 @@ function Lab() {
 
 function Gateway() {
   const rows = [
-    ["SEC Open Data · PVD", "15 datasets: managers, funds, policy, return, published fee, allocation, holdings, monthly NAV", "Public base", "Connector ready · path not pinned", "secopendata.sec.or.th"],
-    ["SEC API portal", "Account, product subscription, subscription key", "Public base", "Not subscribed", "api-portal.sec.or.th"],
+    ["SEC Open Data · PVD", "Companies, funds, policy, published return, published fee, allocation", "Public base", "Server route · header switch SEC live", "secopendata.sec.or.th"],
+    ["SEC key", "Subscription key stays on the server", "Public base", "The page does not call SEC", "secopendata.sec.or.th"],
     ["ThaiPVD employer register", "Employer fund names", "Public", "Loaded · separated onto Employers", "thaipvd.com"],
     ["ThaiPVD management companies", "Who may run a PVD", "Public", "Loaded", "thaipvd.com"],
     ["SET / ThaiBMA / BOT", "Benchmark series for alpha and capture", "Market", "Not connected", "Index publishers"],

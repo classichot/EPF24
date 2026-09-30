@@ -9,6 +9,7 @@ import { AiChat } from "@/components/ai-chat";
 import { CaseControl } from "@/components/case-control";
 import { WorkspaceContext } from "@/components/page-head";
 import { Views, type Api, type Design, type Doc, type Emp } from "@/components/views";
+import { parseSecBook, type SecLiveBook } from "@/lib/sec-book";
 
 const DOCS: Doc[] = [
   { n: "EPF Management Agreement 2022.pdf", t: "Contract", src: COMPANY.provider, f: "128", s: "Reviewed", d: "14 Aug 2026" },
@@ -66,6 +67,9 @@ export function EpfApp() {
   const [ready, setReady] = useState(false);
   const [closed, setClosed] = useState<Record<string, boolean>>({});
   const [llmOn, setLlmOn] = useState(false);
+  const [feed, setFeed] = useState<"prototype" | "sec">("prototype");
+  const [sec, setSec] = useState<SecLiveBook | null>(null);
+  const [secState, setSecState] = useState<Api["secState"]>("idle");
 
   useEffect(() => {
     try {
@@ -75,6 +79,7 @@ export function EpfApp() {
       if (raw?.skin === "console" && (raw.theme === "dark" || raw.theme === "light")) setTheme(raw.theme);
       if (typeof raw?.agi === "boolean") setAgiOn(raw.agi);
       if (raw?.audience === "advisor" || raw?.audience === "corporate") setAudienceState(raw.audience);
+      if (raw?.feed === "sec" || raw?.feed === "prototype") setFeed(raw.feed);
       if (raw?.closed && typeof raw.closed === "object") setClosed(raw.closed);
     } catch { /* ignore */ }
     const book = loadBook();
@@ -82,6 +87,26 @@ export function EpfApp() {
     setActiveId(book.activeId);
     setReady(true);
   }, []);
+
+  useEffect(() => {
+    if (!ready || feed !== "sec") return;
+    let cancel = false;
+    setSecState("loading");
+    fetch("/api/sec/live")
+      .then((res) => res.json())
+      .then((body) => {
+        if (cancel) return;
+        const book = parseSecBook(body);
+        setSec(book);
+        setSecState(book?.live ? "ready" : "error");
+      })
+      .catch(() => {
+        if (cancel) return;
+        setSec(null);
+        setSecState("error");
+      });
+    return () => { cancel = true; };
+  }, [ready, feed]);
 
   useEffect(() => {
     let cancel = false;
@@ -94,8 +119,8 @@ export function EpfApp() {
 
   useEffect(() => {
     if (!ready) return;
-    try { localStorage.setItem("epf24-ui", JSON.stringify({ w: sideW, c: collapsed, theme, agi: agiOn, audience, skin: "console", closed })); } catch { /* ignore */ }
-  }, [ready, sideW, collapsed, theme, agiOn, audience, closed]);
+    try { localStorage.setItem("epf24-ui", JSON.stringify({ w: sideW, c: collapsed, theme, agi: agiOn, audience, skin: "console", closed, feed })); } catch { /* ignore */ }
+  }, [ready, sideW, collapsed, theme, agiOn, audience, closed, feed]);
 
   useEffect(() => {
     if (!ready) return;
@@ -236,6 +261,9 @@ export function EpfApp() {
     reports,
     genReport: (i) => setReports((r) => (r.includes(i) ? r : [...r, i])),
     audience,
+    feed,
+    sec,
+    secState,
   };
 
   const width = collapsed ? 64 : sideW;
@@ -311,6 +339,10 @@ export function EpfApp() {
             />
           ) : <div />}
           <div className="top-actions">
+            <div className="mode-switch" role="group" aria-label="Prototype or SEC live">
+              <button type="button" className={feed === "prototype" ? "on" : ""} onClick={() => setFeed("prototype")}>Prototype</button>
+              <button type="button" className={feed === "sec" ? "on" : ""} onClick={() => setFeed("sec")}>SEC live</button>
+            </div>
             <div className="mode-switch" role="group" aria-label="Advisor or corporate">
               <button type="button" className={audience === "advisor" ? "on" : ""} onClick={() => setAudience("advisor")}>Advisor</button>
               <button type="button" className={audience === "corporate" ? "on" : ""} onClick={() => setAudience("corporate")}>Corporate</button>
@@ -329,6 +361,17 @@ export function EpfApp() {
               <b>{activeCase.employer}</b> is the open file ({statusLabel(activeCase.status)}). This case has no fee schedule and no return series. Figures on the screens stay the Rattana sample and are not this employer’s result.
             </div>
           )}
+          {feed === "sec" && (
+            <div className="case-banner">
+              <b>SEC live</b>
+              <p>
+                {(secState === "loading" || secState === "idle") && "Loading the first page of SEC Open Data. The sample book stays off those tables. "}
+                {secState === "error" && `${sec?.reason || "SEC live did not return published rows. Sample figures are not being labeled as SEC data."} `}
+                {secState === "ready" && `${sec?.reason || "Published rows are loaded."} `}
+                Provider comparison, PVD Market, and the intelligence network use that page. Other screens keep the employer sample file.
+              </p>
+            </div>
+          )}
           {brief && (
             <div className="case-banner">
               <b>{brief.mission}</b>
@@ -343,7 +386,7 @@ export function EpfApp() {
           <Views s={screen} api={api} />
         </div>
       </div>
-      <AiChat screen={screen} audience={audience} agiOn={agiOn} llmOn={llmOn} />
+      <AiChat screen={screen} audience={audience} agiOn={agiOn} llmOn={llmOn} secLive={feed === "sec"} />
     </div>
     </WorkspaceContext.Provider>
   );

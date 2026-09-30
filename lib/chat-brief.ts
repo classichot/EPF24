@@ -7,17 +7,23 @@ export type ChatContext = {
   screen: string;
   audience: Audience;
   agi: boolean;
+  secLive: boolean;
 };
 
-const RULES = [
+function rules(secLive: boolean) {
+  const figures = secLive
+    ? "SEC live is on. Provider comparison, PVD Market, and the intelligence network show the first page of SEC Open Data. Those rows are published SEC figures. Other screens keep the sample file. A published fee is not the negotiated contract."
+    : "Prototype is on. Manager names on screen are real SEC management companies. Fees, returns, menus, and projections attached to them are a mock sample, not published factsheets and not live bids.";
+  return [
   "EPF24 is a prototype of Thai employee provident-fund intelligence. You explain. Deterministic engines calculate. Do not invent a new fee, return, or baht figure.",
-  "Manager names on screen are real SEC management companies. Fees, returns, menus, and projections attached to them are a mock sample, not published factsheets and not live bids.",
+  figures,
   `The open sample file is ${COMPANY.name}: ${COMPANY.members.toLocaleString("en-US")} employees, ${baht(COMPANY.aum)} assets, provider ${COMPANY.provider}. All-in sample fee 0.30%, ${baht(COMPANY.annualCost)} a year. Best-fit cost scenario ${baht(COMPANY.altCost)}. Employer fee opportunity ${baht(COMPANY.feeSaving)} a year. Comparable net return 3.8% versus an alternative scenario of 4.6%. Those are scenarios.`,
   "Do not add the employer fee saving into a member’s retirement balance. Cheapest is not best fit. No action is a valid result when the current arrangement stays competitive.",
   "SEC 2026 member-information publications are consultation proposals, not enacted rules. Do not describe them as law.",
   "Do not claim this chat changed the live app, sent a letter, or spent money. Product spend in this build stays ฿0.",
   "Write short plain sentences. No markdown, no asterisks, and no numbered lists.",
-].join(" ");
+  ].join(" ");
+}
 
 const JOB: Partial<Record<ScreenId, string>> = {
   start: "Easy Start. One box for a plain-language goal, a role of HR, Committee, or Member, then Build the plan. It writes a plan. It does not show a fee table.",
@@ -83,10 +89,10 @@ export function chatSystem(goal: ChatGoal, context: ChatContext) {
   if (goal === "guide") {
     return [
       "You help a person use EPF24. Say which menu to open and what the control does. Use only the page description and the screen list. Do not invent a button. Explain me this page is the written guide beside the headline.",
-      "Every page has Explain me this page and Playbook beside the headline. Advisor and Corporate change the menu. The AGI switch replaces the menu with AGI screens. A blinking-free AI mark means that menu is a language screen, not that the engine is a model.",
+      "Every page has Explain me this page and Playbook beside the headline. The header has Prototype and SEC live. Prototype keeps the sample book. SEC live loads the first page of SEC Open Data on Provider comparison, PVD Market, and the intelligence network. Advisor and Corporate change the menu. The AGI switch replaces the menu with AGI screens. A blinking-free AI mark means that menu is a language screen, not that the engine is a model.",
       `Screens: ${menus()}.`,
       where,
-      RULES,
+      rules(context.secLive),
     ].join(" ");
   }
   if (goal === "specialist") {
@@ -95,14 +101,14 @@ export function chatSystem(goal: ChatGoal, context: ChatContext) {
       "Judge attractiveness as retirement outcome quality, not the fee alone: net return after fees, consistency, downside, risk-adjusted return, investment choice, lifecycle design, global diversification, the default for members who do nothing, personalization by age and horizon, switching, transparency, member experience, advice, governance, administration, and whether the balance is enough for retirement.",
       "A 27-year-old and a member near retirement should not get the same default. A higher scenario balance is not automatically a better outcome near retirement.",
       where,
-      RULES,
+      rules(context.secLive),
     ].join(" ");
   }
   return [
     "You collect feedback so the next build of EPF24 can improve. Restate the request as one concrete product change. Ask one clarifying question only when the request is ambiguous.",
     "Say the note is saved in this browser for the next build. This chat does not edit the app by itself.",
     where,
-    RULES,
+    rules(context.secLive),
   ].join(" ");
 }
 
