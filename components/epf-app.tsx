@@ -5,6 +5,7 @@ import { agiSteps } from "@/lib/moat";
 import { AGI_SCREENS, COMPANY, DEFAULT_WEIGHTS, NAV, NAV_GROUPS, baht, type Audience, type ScreenId } from "@/lib/model";
 import { loadBook, makeCase, saveBook, SEED_CASES, statusLabel, type AdvisorCase, type CaseStatus, type NewCase } from "@/lib/cases";
 import type { OpenBrief } from "@/lib/easy-start";
+import { AiChat } from "@/components/ai-chat";
 import { CaseControl } from "@/components/case-control";
 import { WorkspaceContext } from "@/components/page-head";
 import { Views, type Api, type Design, type Doc, type Emp } from "@/components/views";
@@ -342,6 +343,7 @@ export function EpfApp() {
           <Views s={screen} api={api} />
         </div>
       </div>
+      <AiChat screen={screen} audience={audience} agiOn={agiOn} llmOn={llmOn} />
     </div>
     </WorkspaceContext.Provider>
   );
