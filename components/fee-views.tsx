@@ -52,17 +52,29 @@ function Xray({ goto }: { goto: (id: ScreenId) => void }) {
     <>
       <Head k="Fee X-Ray" title="Every baht in the contract, with its clause." lede="These lines are the negotiated corporate schedule extracted from the uploaded file. A published factsheet price is a different lane and is not added into this total." />
       <div className="split">
-        <div className="surface">
-          <h6 style={{ margin: 0 }}>Negotiated corporate fee</h6>
+        <section className="poster">
+          <span className="kicker">Negotiated corporate fee</span>
           <div className="poster-num" style={{ fontSize: 42 }}>{baht(negotiated)}</div>
-          <p className="muted">Effective {feeLabel(cost.rate)} of assets · {baht(cost.perEmployee)} per employee · confidence is per line, not one score for the whole contract.</p>
-        </div>
+          <span>Effective {feeLabel(cost.rate)} of assets · {baht(cost.perEmployee)} per employee · confidence is per line, not one score for the whole contract.</span>
+        </section>
         <div className="surface">
           <h6 style={{ margin: 0 }}>Published market lane</h6>
           <p>Not from this contract. The observed comparison case for a best-fit provider is {baht(benchmark)} a year. Do not average it with the negotiated total.</p>
           <p className="muted">Gap between the two lanes: {baht(negotiated - benchmark)} a year.</p>
-          <button className="btn btn-secondary" type="button" onClick={() => goto("feemap")}>PVD market and negotiated fee →</button>
+          <button className="btn btn-primary" type="button" onClick={() => goto("feemap")}>PVD market and negotiated fee →</button>
         </div>
+      </div>
+      <div>
+        {FEE_LINES.map((line) => (
+          <div key={line.id} className="cohort" style={{ gridTemplateColumns: "minmax(140px, 280px) minmax(0, 1fr) 120px" }}>
+            <span style={{ fontWeight: 600 }}>{line.name}</span>
+            <div className="hbar" title={`${baht(line.amount)} negotiated`}>
+              <span style={{ width: `${(line.amount / negotiated) * 100}%`, background: "var(--color-gloss)" }} />
+            </div>
+            <b className="num">{baht(line.amount)}</b>
+          </div>
+        ))}
+        <p className="muted">Longer means a larger share of the negotiated total. The comparison case stays in the table.</p>
       </div>
       <table className="table">
         <thead><tr><th>Line</th><th>Layer</th><th className="num">Negotiated</th><th className="num">Comparison case</th><th className="num">Gap</th><th>Confidence</th><th></th></tr></thead>
@@ -73,7 +85,7 @@ function Xray({ goto }: { goto: (id: ScreenId) => void }) {
               <td>{line.layer}</td>
               <td className="num">{baht(line.amount)}</td>
               <td className="num">{baht(line.benchmark)}</td>
-              <td className="num">{baht(line.saving)}</td>
+              <td className="num" style={{ color: "var(--color-accent-700)", fontWeight: 700 }}>{baht(line.saving)}</td>
               <td>{line.confidence}%</td>
               <td><button className="btn btn-secondary" type="button" onClick={() => setOpen(open === line.id ? null : line.id)}>{open === line.id ? "Hide source" : "View source"}</button></td>
             </tr>
@@ -81,8 +93,8 @@ function Xray({ goto }: { goto: (id: ScreenId) => void }) {
         </tbody>
       </table>
       {FEE_LINES.filter((line) => line.id === open).map((line) => (
-        <div className="ink" key={line.id}>
-          <span className="eyebrow">{line.source} · {line.ref}</span>
+        <div className="poster" key={line.id}>
+          <span className="kicker">{line.source} · {line.ref}</span>
           <strong>{line.clause}</strong>
           <span>Retrieved from the employer upload in this workspace. The comparison-case column is not in that clause.</span>
         </div>

@@ -4,8 +4,8 @@
   --color-bg: #0c1210;
   --color-surface: #151d1a;
   --color-text: #e8f0eb;
-  --color-accent: #d4b15a;
-  --color-accent-2: #d4b15a;
+  --color-accent: #8a3fe0;
+  --color-accent-2: #d7c2ff;
   --color-divider: #2a3832;
   --color-neutral-100: #1c2622;
   --color-neutral-200: #24302b;
@@ -16,19 +16,20 @@
   --color-neutral-700: #a8bbb2;
   --color-neutral-800: #c5d4cc;
   --color-neutral-900: #e8f0eb;
-  --color-accent-100: #141c2a;
-  --color-accent-200: #1c2838;
-  --color-accent-300: #2a3a4e;
-  --color-accent-400: #8c7340;
-  --color-accent-500: #d4b15a;
-  --color-accent-600: #e2c57a;
-  --color-accent-700: #f0ddb0;
-  --color-accent-800: #f6ead0;
-  --color-accent-900: #fbf6ea;
-  --color-sidebar: #0e2344;
-  --color-sidebar-on: #d4b15a;
-  --color-sidebar-text: #f6f1e6;
-  --color-on-accent: #0e2344;
+  --color-accent-100: #160e24;
+  --color-accent-200: #241536;
+  --color-accent-300: #361f52;
+  --color-accent-400: #6a32b4;
+  --color-accent-500: #8a3fe0;
+  --color-accent-600: #a56bff;
+  --color-accent-700: #e4d0ff;
+  --color-accent-800: #f0e4ff;
+  --color-accent-900: #f8f3ff;
+  --color-sidebar: #1a1030;
+  --color-sidebar-on: #8a3fe0;
+  --color-sidebar-text: #f6f1ff;
+  --color-on-accent: #f8f4ff;
+  --color-gloss: linear-gradient(180deg, color-mix(in srgb, #fff 55%, transparent) 0%, transparent 16%), linear-gradient(180deg, #a56bff 0%, #8a3fe0 40%, #5c22b0 100%);
   --color-accent-deep: color-mix(in srgb, #000 28%, var(--color-sidebar));
   --font-heading: "Archivo", system-ui, sans-serif;
   --font-body: "Archivo", system-ui, sans-serif;
@@ -62,21 +63,22 @@
   --color-neutral-700: #605d5d;
   --color-neutral-800: #444141;
   --color-neutral-900: #2d2b2b;
-  --color-accent: #c4a04a;
-  --color-accent-2: #c4a04a;
-  --color-accent-100: #fbf6ea;
-  --color-accent-200: #f3e7c6;
-  --color-accent-300: #e6d09a;
-  --color-accent-400: #d4b15a;
-  --color-accent-500: #c4a04a;
-  --color-accent-600: #9a7a2e;
-  --color-accent-700: #1a3358;
-  --color-accent-800: #122743;
-  --color-accent-900: #0c1c33;
-  --color-sidebar: #0e2344;
-  --color-sidebar-on: #d4b15a;
-  --color-sidebar-text: #f6f1e6;
-  --color-on-accent: #0e2344;
+  --color-accent: #7c3aed;
+  --color-accent-2: #c9a6ff;
+  --color-accent-100: #f6f0ff;
+  --color-accent-200: #eadcff;
+  --color-accent-300: #d4b8ff;
+  --color-accent-400: #b07cff;
+  --color-accent-500: #7c3aed;
+  --color-accent-600: #5b21b6;
+  --color-accent-700: #4c1d95;
+  --color-accent-800: #3b176e;
+  --color-accent-900: #2a1050;
+  --color-sidebar: #1a1030;
+  --color-sidebar-on: #8a3fe0;
+  --color-sidebar-text: #f6f1ff;
+  --color-on-accent: #f8f4ff;
+  --color-gloss: linear-gradient(180deg, color-mix(in srgb, #fff 50%, transparent) 0%, transparent 16%), linear-gradient(180deg, #a56bff 0%, #7c3aed 42%, #5b21b6 100%);
   --color-accent-deep: color-mix(in srgb, #000 28%, var(--color-sidebar));
 }
 
@@ -136,9 +138,9 @@ button, input { font-family: inherit; }
   border-radius: 0;
 }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.btn-primary { background: var(--color-accent); color: var(--color-on-accent); }
-.btn-primary:hover { background: var(--color-accent-600); }
-.btn-primary:active { background: color-mix(in srgb, #000 14%, var(--color-accent)); }
+.btn-primary { background: var(--color-gloss); color: var(--color-on-accent); }
+.btn-primary:hover { filter: brightness(1.06); }
+.btn-primary:active { filter: brightness(0.94); }
 .btn-secondary { border-color: var(--color-divider); background: transparent; }
 .btn-secondary:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
 .btn-ghost { color: var(--color-accent-700); padding-inline: var(--space-1); }
@@ -302,8 +304,8 @@ input[type="range"] { accent-color: var(--color-accent); width: 100%; }
   line-height: 1;
 }
 .nav-btn.on {
-  background: var(--color-sidebar-on);
-  border-left-color: var(--color-sidebar);
+  background: var(--color-gloss);
+  border-left-color: var(--color-accent-2);
   font-weight: 800;
   color: var(--color-on-accent);
 }
@@ -407,7 +409,7 @@ div.nav-group:hover { opacity: 0.7; color: inherit; }
   cursor: pointer;
 }
 .mode-switch button:last-child { border-right: 0; }
-.mode-switch button.on { background: var(--color-accent); color: var(--color-on-accent); }
+.mode-switch button.on { background: var(--color-gloss); color: var(--color-on-accent); }
 .ios-switch {
   display: inline-flex;
   align-items: center;
@@ -524,7 +526,7 @@ div.nav-group:hover { opacity: 0.7; color: inherit; }
   cursor: pointer;
 }
 .case-status button:last-child { border-right: 1px solid var(--color-divider); }
-.case-status button.on { background: var(--color-accent); color: var(--color-on-accent); }
+.case-status button.on { background: var(--color-gloss); color: var(--color-on-accent); }
 .case-pop {
   position: fixed;
   z-index: 41;
@@ -683,7 +685,7 @@ div.nav-group:hover { opacity: 0.7; color: inherit; }
 .guide-open {
   width: 100%;
   border: 0;
-  background: var(--color-accent);
+  background: var(--color-gloss);
   color: var(--color-on-accent);
   font: inherit;
   font-weight: 800;
@@ -692,7 +694,7 @@ div.nav-group:hover { opacity: 0.7; color: inherit; }
   text-align: left;
   margin-bottom: 8px;
 }
-.guide-open:hover { background: var(--color-accent-600); }
+.guide-open:hover { filter: brightness(1.06); }
 .guide-progress { display: grid; gap: 8px; margin-bottom: 12px; font-size: 13px; color: var(--color-neutral-700); }
 .guide-progress div { height: 3px; background: var(--color-divider); }
 .guide-progress i { display: block; height: 3px; background: var(--color-accent); }
@@ -760,7 +762,7 @@ div.nav-group:hover { opacity: 0.7; color: inherit; }
 .actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
 .poster {
-  background: var(--color-accent);
+  background: var(--color-gloss);
   color: var(--color-on-accent);
   padding: 22px 24px;
   display: grid;
@@ -922,7 +924,7 @@ div.nav-group:hover { opacity: 0.7; color: inherit; }
   background: transparent;
   color: var(--color-text);
 }
-.seg button.on { background: var(--color-accent); color: var(--color-on-accent); font-weight: 800; }
+.seg button.on { background: var(--color-gloss); color: var(--color-on-accent); font-weight: 800; }
 .chips { display: flex; gap: 8px; flex-wrap: wrap; }
 .chip {
   border: 1px solid var(--color-divider);
@@ -933,7 +935,7 @@ div.nav-group:hover { opacity: 0.7; color: inherit; }
   font-size: 13px;
   cursor: pointer;
 }
-.chip.on { background: var(--color-accent); color: var(--color-on-accent); border-color: var(--color-accent); }
+.chip.on { background: var(--color-gloss); color: var(--color-on-accent); border-color: var(--color-accent); }
 
 .trust {
   font-size: 11px;
@@ -1069,7 +1071,7 @@ button.mcard { font: inherit; width: 100%; }
   padding: 4px 10px;
   cursor: pointer;
 }
-.btn-start:hover { background: var(--color-accent); color: var(--color-on-accent); }
+.btn-start:hover { background: var(--color-gloss); color: var(--color-on-accent); }
 .search {
   border: 1px solid var(--color-divider);
   background: transparent;
@@ -1161,7 +1163,7 @@ button.mcard { font: inherit; width: 100%; }
   bottom: 24px;
   z-index: 35;
   border: 0;
-  background: var(--color-accent);
+  background: var(--color-gloss);
   color: var(--color-on-accent);
   font-family: var(--font-heading);
   font-weight: 800;
@@ -1169,7 +1171,7 @@ button.mcard { font: inherit; width: 100%; }
   padding: 12px 16px;
   cursor: pointer;
 }
-.ai-chat-launch:hover { background: var(--color-accent-600); }
+.ai-chat-launch:hover { filter: brightness(1.06); }
 .ai-chat {
   position: fixed;
   right: 24px;
@@ -1206,7 +1208,7 @@ button.mcard { font: inherit; width: 100%; }
   cursor: pointer;
 }
 .ai-chat-goals button:last-child { border-right: 0; }
-.ai-chat-goals button.on { background: var(--color-accent); color: var(--color-on-accent); }
+.ai-chat-goals button.on { background: var(--color-gloss); color: var(--color-on-accent); }
 .ai-chat-hint { margin: 0; padding: 8px 14px; font-size: 12px; color: var(--color-neutral-700); }
 .ai-chat-log { flex: 1; overflow: auto; display: flex; flex-direction: column; gap: 8px; padding: 0 14px 10px; }
 .ai-chat-user, .ai-chat-bot { margin: 0; padding: 8px 10px; font-size: 14px; white-space: pre-wrap; }
