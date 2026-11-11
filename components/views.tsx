@@ -543,7 +543,7 @@ function Bench({ api }: { api: Api }) {
               ["Fee schedule", "Fee Schedule 2026.xlsx", "Ready · 11 lines"],
               ["Factsheets", "4 policy factsheets", "Ready"],
             ].map(([k, n, st]) => (
-              <div className="stat" key={k}><span className="muted">{k}</span><b style={{ fontSize: 16 }}>{n}</b><span className="good" style={{ fontSize: 12, fontWeight: 700 }}>{st}</span></div>
+              <div className="stat" key={k}><span className="muted">{k}</span><b style={{ fontSize: 16 }}>{n}</b><span className="good" style={{ fontSize: 12, fontWeight: 600 }}>{st}</span></div>
             ))}
           </div>
           <button className="btn btn-primary" onClick={api.runBench}>Run AI extraction →</button>
@@ -804,7 +804,7 @@ function Tender({ api }: { api: Api }) {
         {steps.map((label, i) => (
           <button key={label} className={i === api.tstep ? "on" : i < api.tstep ? "done" : ""} onClick={() => api.setTstep(i)} type="button">
             <div style={{ fontSize: 11 }}>Step {i + 1}</div>
-            <div style={{ fontWeight: 800 }}>{label}</div>
+            <div style={{ fontWeight: 600 }}>{label}</div>
           </button>
         ))}
       </div>
@@ -1005,7 +1005,7 @@ function Watch({ api }: { api: Api }) {
             <span className="muted">{h.k}</span>
             <b>{h.score}</b>
             <span className="muted">{h.detail}</span>
-            <span style={{ fontWeight: 700, color: toneColor(h.tone), fontSize: 12 }}>{h.status}</span>
+            <span style={{ fontWeight: 600, color: toneColor(h.tone), fontSize: 12 }}>{h.status}</span>
           </div>
         ))}
       </div>
@@ -1090,7 +1090,7 @@ function Committee({ api }: { api: Api }) {
       {api.ctab === "during" && (
         <div className="split">
           <div style={{ borderTop: "2px solid var(--color-text)" }}>
-            <div className="good" style={{ fontWeight: 800, padding: "10px 0" }}>● Live transcription · 00:42:18</div>
+            <div className="good" style={{ fontWeight: 600, padding: "10px 0" }}>● Live transcription · 00:42:18</div>
             {[
               ["M. Chai", "The fee gap is material. I want a reprice and a market test in parallel."],
               ["K. Suda", "We can issue the RFP after today if the committee agrees the weights."],

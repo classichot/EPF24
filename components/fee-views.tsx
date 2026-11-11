@@ -69,7 +69,7 @@ function Xray({ goto }: { goto: (id: ScreenId) => void }) {
           <div key={line.id} className="cohort" style={{ gridTemplateColumns: "minmax(140px, 280px) minmax(0, 1fr) 120px" }}>
             <span style={{ fontWeight: 600 }}>{line.name}</span>
             <div className="hbar" title={`${baht(line.amount)} negotiated`}>
-              <span style={{ width: `${(line.amount / negotiated) * 100}%`, background: "var(--color-gloss)" }} />
+              <span style={{ width: `${(line.amount / negotiated) * 100}%`, background: "var(--color-accent)" }} />
             </div>
             <b className="num">{baht(line.amount)}</b>
           </div>
@@ -85,7 +85,7 @@ function Xray({ goto }: { goto: (id: ScreenId) => void }) {
               <td>{line.layer}</td>
               <td className="num">{baht(line.amount)}</td>
               <td className="num">{baht(line.benchmark)}</td>
-              <td className="num" style={{ color: "var(--color-accent-700)", fontWeight: 700 }}>{baht(line.saving)}</td>
+              <td className="num" style={{ color: "var(--color-accent-700)", fontWeight: 600 }}>{baht(line.saving)}</td>
               <td>{line.confidence}%</td>
               <td><button className="btn btn-secondary" type="button" onClick={() => setOpen(open === line.id ? null : line.id)}>{open === line.id ? "Hide source" : "View source"}</button></td>
             </tr>
