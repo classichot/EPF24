@@ -4,8 +4,8 @@
   --color-bg: #0c1210;
   --color-surface: #151d1a;
   --color-text: #e8f0eb;
-  --color-accent: #1e61b8;
-  --color-accent-2: #1e61b8;
+  --color-accent: #d4b15a;
+  --color-accent-2: #d4b15a;
   --color-divider: #2a3832;
   --color-neutral-100: #1c2622;
   --color-neutral-200: #24302b;
@@ -16,18 +16,19 @@
   --color-neutral-700: #a8bbb2;
   --color-neutral-800: #c5d4cc;
   --color-neutral-900: #e8f0eb;
-  --color-accent-100: #0f1824;
-  --color-accent-200: #152233;
-  --color-accent-300: #1b2e46;
-  --color-accent-400: #1b4174;
-  --color-accent-500: #1e61b8;
-  --color-accent-600: #266bc5;
-  --color-accent-700: #97bced;
-  --color-accent-800: #c5d8f1;
-  --color-accent-900: #e5eefa;
-  --color-sidebar: #1a3861;
-  --color-sidebar-on: #1e61b8;
-  --color-on-accent: #f3f7fb;
+  --color-accent-100: #141c2a;
+  --color-accent-200: #1c2838;
+  --color-accent-300: #2a3a4e;
+  --color-accent-400: #8c7340;
+  --color-accent-500: #d4b15a;
+  --color-accent-600: #e2c57a;
+  --color-accent-700: #f0ddb0;
+  --color-accent-800: #f6ead0;
+  --color-accent-900: #fbf6ea;
+  --color-sidebar: #0e2344;
+  --color-sidebar-on: #d4b15a;
+  --color-sidebar-text: #f6f1e6;
+  --color-on-accent: #0e2344;
   --color-accent-deep: color-mix(in srgb, #000 28%, var(--color-sidebar));
   --font-heading: "Archivo", system-ui, sans-serif;
   --font-body: "Archivo", system-ui, sans-serif;
@@ -61,18 +62,21 @@
   --color-neutral-700: #605d5d;
   --color-neutral-800: #444141;
   --color-neutral-900: #2d2b2b;
-  --color-accent-100: #eff4fa;
-  --color-accent-200: #d1def0;
-  --color-accent-300: #adc3e1;
-  --color-accent-400: #7d9eca;
-  --color-accent-500: #2d6cbe;
-  --color-accent-600: #154179;
-  --color-accent-700: #143867;
-  --color-accent-800: #112a4b;
-  --color-accent-900: #0d1e36;
-  --color-sidebar: #1a3861;
-  --color-sidebar-on: #1e61b8;
-  --color-on-accent: #f3f7fb;
+  --color-accent: #c4a04a;
+  --color-accent-2: #c4a04a;
+  --color-accent-100: #fbf6ea;
+  --color-accent-200: #f3e7c6;
+  --color-accent-300: #e6d09a;
+  --color-accent-400: #d4b15a;
+  --color-accent-500: #c4a04a;
+  --color-accent-600: #9a7a2e;
+  --color-accent-700: #1a3358;
+  --color-accent-800: #122743;
+  --color-accent-900: #0c1c33;
+  --color-sidebar: #0e2344;
+  --color-sidebar-on: #d4b15a;
+  --color-sidebar-text: #f6f1e6;
+  --color-on-accent: #0e2344;
   --color-accent-deep: color-mix(in srgb, #000 28%, var(--color-sidebar));
 }
 
@@ -134,7 +138,7 @@ button, input { font-family: inherit; }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .btn-primary { background: var(--color-accent); color: var(--color-on-accent); }
 .btn-primary:hover { background: var(--color-accent-600); }
-.btn-primary:active { background: var(--color-accent-700); }
+.btn-primary:active { background: color-mix(in srgb, #000 14%, var(--color-accent)); }
 .btn-secondary { border-color: var(--color-divider); background: transparent; }
 .btn-secondary:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
 .btn-ghost { color: var(--color-accent-700); padding-inline: var(--space-1); }
@@ -202,7 +206,7 @@ input[type="range"] { accent-color: var(--color-accent); width: 100%; }
 }
 .side {
   background: var(--color-sidebar);
-  color: var(--color-on-accent);
+  color: var(--color-sidebar-text);
   border-right: 1px solid var(--color-divider);
   display: flex;
   flex-direction: column;
@@ -243,7 +247,7 @@ input[type="range"] { accent-color: var(--color-accent); width: 100%; }
   width: 22px;
   height: 22px;
   flex: none;
-  color: var(--color-on-accent);
+  color: var(--color-sidebar-text);
 }
 .brand-sub {
   font-size: 10px;
@@ -256,9 +260,9 @@ input[type="range"] { accent-color: var(--color-accent); width: 100%; }
   flex: none;
   width: 32px;
   height: 32px;
-  border: 1px solid var(--color-on-accent);
+  border: 1px solid var(--color-sidebar-text);
   background: transparent;
-  color: var(--color-on-accent);
+  color: var(--color-sidebar-text);
   font-weight: 800;
   font-size: 14px;
   cursor: pointer;
@@ -279,7 +283,7 @@ input[type="range"] { accent-color: var(--color-accent); width: 100%; }
   border: 0;
   border-left: 4px solid transparent;
   background: transparent;
-  color: var(--color-on-accent);
+  color: var(--color-sidebar-text);
   padding: 7px 12px;
   font-size: 14px;
   cursor: pointer;
@@ -299,7 +303,7 @@ input[type="range"] { accent-color: var(--color-accent); width: 100%; }
 }
 .nav-btn.on {
   background: var(--color-sidebar-on);
-  border-left-color: var(--color-on-accent);
+  border-left-color: var(--color-sidebar);
   font-weight: 800;
   color: var(--color-on-accent);
 }
